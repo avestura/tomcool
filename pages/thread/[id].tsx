@@ -11,13 +11,20 @@ import {
     InputWrapper,
     Code,
     Button,
+    Group,
+    Menu,
 } from "@mantine/core";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import {
     ChatBubbleIcon,
+    CommitIcon,
     Cross1Icon,
     CrossCircledIcon,
+    CubeIcon,
+    DownloadIcon,
+    DrawingPinIcon,
+    GlobeIcon,
 } from "@modulz/radix-icons";
 import useSWR from "swr";
 import { Thread, ThreadResponse } from "../../models/ThomasForumModels";
@@ -43,7 +50,6 @@ const ThreadViewer = (props: {
     });
 
     const [loading, setLoading] = useState(false);
-    
 
     const submit = form.onSubmit((values) => {
         setLoading(true);
@@ -82,18 +88,25 @@ const ThreadViewer = (props: {
 
     const mentions = useMemo(
         () => ({
-          allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
-          mentionDenotationChars: ['@'],
-          source: (searchTerm: string, renderList: Function, mentionChar: string) => {
-            const list = t.replies.map((r, i) => ({ id: i+1, value: r.hash}));
-            const includesSearchTerm = list.filter((item) =>
-              item.value.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-            renderList(includesSearchTerm);
-          },
+            allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
+            mentionDenotationChars: ["@"],
+            source: (
+                searchTerm: string,
+                renderList: Function,
+                mentionChar: string
+            ) => {
+                const list = t.replies.map((r, i) => ({
+                    id: i + 1,
+                    value: r.hash,
+                }));
+                const includesSearchTerm = list.filter((item) =>
+                    item.value.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+                renderList(includesSearchTerm);
+            },
         }),
         [t]
-      );
+    );
 
     const replyMemos = useMemo(() => {
         return t.replies.map((r) => (
@@ -106,14 +119,30 @@ const ThreadViewer = (props: {
             >
                 <ContentRenderer>{r.text}</ContentRenderer>
             </Timeline.Item>
-        ))
-    }, [t])
+        ));
+    }, [t]);
 
     return (
         <>
-            <Title order={2} mb={10}>
-                {t.title}
-            </Title>
+            <div style={{ display: "flex" }}>
+                <Title style={{ flexGrow: 1 }} order={2} mb={10}>
+                    {t.title}
+                </Title>
+                <Menu>
+                    <Menu.Label>Recover</Menu.Label>
+                    <Menu.Item icon={<CubeIcon />}>Recover from IPFS</Menu.Item>
+                    <Menu.Item icon={<GlobeIcon />}>
+                        Recover from Internet Archive
+                    </Menu.Item>
+                    <Divider />
+                    <Menu.Label>Storage</Menu.Label>
+                    <Menu.Item color="blue" icon={<DrawingPinIcon />}>Pin</Menu.Item>,
+                    <Menu.Item color="lime" icon={<DownloadIcon />}>Save in browser</Menu.Item>,
+                    <Menu.Item color="lime" icon={<CubeIcon />}>
+                        Save to IPFS
+                    </Menu.Item>
+                </Menu>
+            </div>
             <Paper
                 className="thread-content"
                 sx={{ img: { maxWidth: "100%" } }}
@@ -135,9 +164,16 @@ const ThreadViewer = (props: {
                 Post a reply
             </Title>
             <form onSubmit={submit}>
-                <InputWrapper mb={10} required label="Content (markdown is supported)" sx={{
-                    ".ql-mention-list-container,.ql-container": {zIndex: 99999}
-                }}>
+                <InputWrapper
+                    mb={10}
+                    required
+                    label="Content (markdown is supported)"
+                    sx={{
+                        ".ql-mention-list-container,.ql-container": {
+                            zIndex: 99999,
+                        },
+                    }}
+                >
                     <RichTextEditor
                         readOnly={loading}
                         value={form.values.content}
