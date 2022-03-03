@@ -80,20 +80,20 @@ const ThreadViewer = (props: {
             });
     });
 
-    // const mentions = useMemo(
-    //     () => ({
-    //       allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
-    //       mentionDenotationChars: ['@'],
-    //       source: (searchTerm: string, renderList: Function, mentionChar: string) => {
-    //         const list = t.replies.map((r, i) => ({ id: i+1, value: r.hash}));
-    //         const includesSearchTerm = list.filter((item) =>
-    //           item.value.toLowerCase().includes(searchTerm.toLowerCase())
-    //         );
-    //         renderList(includesSearchTerm);
-    //       },
-    //     }),
-    //     []
-    //   );
+    const mentions = useMemo(
+        () => ({
+          allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
+          mentionDenotationChars: ['@'],
+          source: (searchTerm: string, renderList: Function, mentionChar: string) => {
+            const list = t.replies.map((r, i) => ({ id: i+1, value: r.hash}));
+            const includesSearchTerm = list.filter((item) =>
+              item.value.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            renderList(includesSearchTerm);
+          },
+        }),
+        [t]
+      );
 
     const replyMemos = useMemo(() => {
         return t.replies.map((r) => (
@@ -145,6 +145,7 @@ const ThreadViewer = (props: {
                             ["blockquote", "code", "codeBlock"],
                             ["sup", "sub"],
                         ]}
+                        mentions={mentions}
                         {...form.getInputProps("content")}
                     ></RichTextEditor>
                 </InputWrapper>
