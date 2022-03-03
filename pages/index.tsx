@@ -44,7 +44,7 @@ export default function HomePage() {
             <Title mb={20}>Home Page</Title>
             {error && (
                 <Alert
-                    mb={10}
+                    mb={20}
                     icon={<CrossCircledIcon />}
                     title="Error"
                     color="red"

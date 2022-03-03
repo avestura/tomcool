@@ -13,7 +13,7 @@ import {
     Button,
 } from "@mantine/core";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
     ChatBubbleIcon,
     Cross1Icon,
@@ -22,11 +22,10 @@ import {
 import useSWR from "swr";
 import { Thread, ThreadResponse } from "../../models/ThomasForumModels";
 import axios from "axios";
-import { useForm } from "@mantine/hooks";
 import { useNotifications } from "@mantine/notifications";
 import RichTextEditor from "../../components/RichTextEditor";
-import ReactMarkdown from "react-markdown";
 import { ContentRenderer } from "../../components/ContentRenderer";
+import { useForm } from "@mantine/hooks";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -44,6 +43,7 @@ const ThreadViewer = (props: {
     });
 
     const [loading, setLoading] = useState(false);
+    
 
     const submit = form.onSubmit((values) => {
         setLoading(true);
@@ -55,7 +55,7 @@ const ThreadViewer = (props: {
             .then((req) => {
                 if (req.data.ok) {
                     form.reset();
-                    setLoading(false)
+                    setLoading(false);
                     if (props.reeval) {
                         props.reeval();
                     }
@@ -79,28 +79,56 @@ const ThreadViewer = (props: {
                 });
             });
     });
+
+    // const mentions = useMemo(
+    //     () => ({
+    //       allowedChars: /^[A-Za-z\sÅÄÖåäö]*$/,
+    //       mentionDenotationChars: ['@'],
+    //       source: (searchTerm: string, renderList: Function, mentionChar: string) => {
+    //         const list = t.replies.map((r, i) => ({ id: i+1, value: r.hash}));
+    //         const includesSearchTerm = list.filter((item) =>
+    //           item.value.toLowerCase().includes(searchTerm.toLowerCase())
+    //         );
+    //         renderList(includesSearchTerm);
+    //       },
+    //     }),
+    //     []
+    //   );
+
+    const replyMemos = useMemo(() => {
+        return t.replies.map((r) => (
+            <Timeline.Item
+                className="comment-content"
+                sx={{ img: { maxWidth: "100%" } }}
+                key={r.hash}
+                bullet={<ChatBubbleIcon scale={2} />}
+                title={r.hash}
+            >
+                <ContentRenderer>{r.text}</ContentRenderer>
+            </Timeline.Item>
+        ))
+    }, [t])
+
     return (
         <>
             <Title order={2} mb={10}>
                 {t.title}
             </Title>
-            <Paper className="thread-content" sx={{'img': {maxWidth: "100%"}}} padding="md" shadow="sm" mb={20}>
-            <ContentRenderer>{t.text}</ContentRenderer>
+            <Paper
+                className="thread-content"
+                sx={{ img: { maxWidth: "100%" } }}
+                padding="md"
+                shadow="sm"
+                mb={20}
+            >
+                <ContentRenderer>{t.text}</ContentRenderer>
             </Paper>
             <Divider mb={20} variant="dashed" />
-            {t.replies.length === 0 && <Text>No replies. Be first to reply!</Text>}
+            {t.replies.length === 0 && (
+                <Text>No replies. Be first to reply!</Text>
+            )}
             <Timeline mb={20} bulletSize={24} lineWidth={2}>
-                {t.replies.map((r, id) => (
-                    <Timeline.Item
-                        className="comment-content"
-                        sx={{'img': {maxWidth: "100%"}}}
-                        key={r.hash}
-                        bullet={<ChatBubbleIcon scale={2} />}
-                        title={r.hash}
-                    >
-                        <ContentRenderer>{r.text}</ContentRenderer>
-                    </Timeline.Item>
-                ))}
+                {replyMemos}
             </Timeline>
             <Divider mb={20} variant="dashed" />
             <Title order={3} mb={5}>
@@ -110,7 +138,7 @@ const ThreadViewer = (props: {
                 <InputWrapper mb={10} required label="Content">
                     <RichTextEditor
                         readOnly={loading}
-                        value=""
+                        value={form.values.content}
                         controls={[
                             ["bold", "italic", "underline", "link", "image"],
                             ["unorderedList", "h1", "h2", "h3"],
@@ -152,26 +180,33 @@ const Post = () => {
     return (
         <>
             {error && (
-                <Alert icon={<CrossCircledIcon />} title="Error" color="red">
+                <Alert
+                    mb={10}
+                    icon={<CrossCircledIcon />}
+                    title="Error"
+                    color="red"
+                >
                     There was a problem fetching data, trying again...
                 </Alert>
             )}
             {data ? (
                 <>
-                    {data.ok ? (
+                    {!data.ok && (
+                        <Alert
+                            icon={<CrossCircledIcon />}
+                            title="Error"
+                            color="red"
+                            mb={10}
+                        >
+                            {data.error}
+                        </Alert>
+                    )}
+                    {data.ok && (
                         <ThreadViewer
                             id={parseInt(id as string, 10)}
                             thread={data.thread}
                             reeval={() => mutate()}
                         />
-                    ) : (
-                        <Alert
-                            icon={<CrossCircledIcon />}
-                            title="Error"
-                            color="red"
-                        >
-                            {data.error}
-                        </Alert>
                     )}
                 </>
             ) : (
