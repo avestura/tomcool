@@ -94,7 +94,7 @@ const ThreadViewer = (props: {
                     <Timeline.Item
                         className="comment-content"
                         sx={{'img': {maxWidth: "100%"}}}
-                        key={id}
+                        key={r.hash}
                         bullet={<ChatBubbleIcon scale={2} />}
                         title={r.hash}
                     >
