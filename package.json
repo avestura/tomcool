@@ -1,0 +1,38 @@
+{
+  "name": "tomcool",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@mantine/core": "^3.6.13",
+    "@mantine/dates": "^3.6.13",
+    "@mantine/dropzone": "^3.6.13",
+    "@mantine/hooks": "^3.6.13",
+    "@mantine/modals": "^3.6.13",
+    "@mantine/next": "^3.6.13",
+    "@mantine/notifications": "^3.6.13",
+    "@mantine/prism": "^3.6.13",
+    "@mantine/rte": "^3.6.13",
+    "@modulz/radix-icons": "^4.0.0",
+    "axios": "^0.26.0",
+    "dayjs": "^1.10.8",
+    "next": "12.1.0",
+    "react": "17.0.2",
+    "react-dom": "17.0.2",
+    "react-markdown": "^8.0.0",
+    "rehype-raw": "^6.1.1",
+    "swr": "^1.2.2"
+  },
+  "devDependencies": {
+    "@types/node": "17.0.21",
+    "@types/react": "17.0.39",
+    "eslint": "8.10.0",
+    "eslint-config-next": "12.1.0",
+    "typescript": "4.6.2"
+  }
+}
