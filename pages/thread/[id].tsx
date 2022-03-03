@@ -142,9 +142,11 @@ const ThreadViewer = (props: {
                         readOnly={loading}
                         value={form.values.content}
                         controls={[
-                            ["bold", "italic", "underline", "link", "image"],
-                            ["unorderedList", "h1", "h2", "h3"],
-                            ["blockquote", "code", "codeBlock"],
+                            ["bold", "italic", "underline", "clean"],
+                            ["h1", "h2", "h3", "h4", "h5", "h6"],
+                            ["unorderedList", "orderedList"],
+                            ["link", "video", "image", "blockquote"],
+                            ["code", "codeBlock"],
                             ["sup", "sub"],
                         ]}
                         mentions={mentions}
