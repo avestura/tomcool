@@ -6,7 +6,12 @@ import {
     Text,
     createStyles,
 } from "@mantine/core";
-import { DrawingPinIcon, HomeIcon, PlusIcon, ThickArrowRightIcon } from "@modulz/radix-icons";
+import {
+    DrawingPinIcon,
+    HomeIcon,
+    PlusIcon,
+    ThickArrowRightIcon,
+} from "@modulz/radix-icons";
 import { useRouter } from "next/router";
 
 interface MainLinkProps {
@@ -14,6 +19,7 @@ interface MainLinkProps {
     color: string;
     label: string;
     path: string;
+    closeCurtain?: () => void;
 }
 
 const useStyles = createStyles((theme) => ({
@@ -34,11 +40,19 @@ const useStyles = createStyles((theme) => ({
     },
 }));
 
-function MainLink({ icon, color, label, path }: MainLinkProps) {
+function MainLink({ icon, color, label, path, closeCurtain }: MainLinkProps) {
     const { classes } = useStyles();
     const router = useRouter();
     return (
-        <UnstyledButton onClick={() => router.push(path)} className={classes.button}>
+        <UnstyledButton
+            onClick={() => {
+                router.push(path);
+                if (closeCurtain) {
+                    closeCurtain();
+                }
+            }}
+            className={classes.button}
+        >
             <Group>
                 <ThemeIcon color={color} variant="light">
                     {icon}
@@ -51,13 +65,20 @@ function MainLink({ icon, color, label, path }: MainLinkProps) {
 }
 
 const data = [
-    { icon: <HomeIcon />, color: "blue", label: "Home", path: '/' },
-    { icon: <PlusIcon />, color: "lime", label: "New Thread", path: '/new' },
-    { icon: <DrawingPinIcon />, color: "violet", label: "Pins", path: '/pins' },
-    { icon: <ThickArrowRightIcon />, color: "yellow", label: "Navigate", path: '/goto' },
+    { icon: <HomeIcon />, color: "blue", label: "Home", path: "/" },
+    { icon: <PlusIcon />, color: "lime", label: "New Thread", path: "/new" },
+    { icon: <DrawingPinIcon />, color: "violet", label: "Pins", path: "/pins" },
+    {
+        icon: <ThickArrowRightIcon />,
+        color: "yellow",
+        label: "Navigate",
+        path: "/goto",
+    },
 ];
 
-export function MainLinks() {
-    const links = data.map((link) => <MainLink {...link} key={link.label} path={link.path} />);
+export function MainLinks(props: { closeCurtain?: () => void }) {
+    const links = data.map((link) => (
+        <MainLink {...link} key={link.label} path={link.path} closeCurtain={props.closeCurtain} />
+    ));
     return <div>{links}</div>;
 }

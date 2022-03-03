@@ -21,6 +21,7 @@ export default function MainLayout(props: { children: React.ReactNode }) {
     const theme = useMantineTheme();
     const { colorScheme, toggleColorScheme } = useMantineColorScheme();
 
+    const closeCurtain = () => setOpened(false)
     return (
         <AppShell
             // navbarOffsetBreakpoint controls when navbar should no longer be offset with padding-left
@@ -40,10 +41,10 @@ export default function MainLayout(props: { children: React.ReactNode }) {
                     width={{ sm: 250, lg: 250 }}
                 >
                     <Navbar.Section grow mt="xs">
-                        <MainLinks />
+                        <MainLinks closeCurtain={closeCurtain} />
                     </Navbar.Section>
                     <Navbar.Section>
-                        <User />
+                        <User closeCuratin={closeCurtain} />
                     </Navbar.Section>
                 </Navbar>
             }
