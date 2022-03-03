@@ -135,7 +135,7 @@ const ThreadViewer = (props: {
                 Post a reply
             </Title>
             <form onSubmit={submit}>
-                <InputWrapper mb={10} required label="Content" sx={{
+                <InputWrapper mb={10} required label="Content (markdown is supported)" sx={{
                     ".ql-mention-list-container,.ql-container": {zIndex: 99999}
                 }}>
                     <RichTextEditor
