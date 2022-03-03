@@ -38,6 +38,7 @@ export default function HomePage() {
         "https://forums.trgwii.com/api/thread/recent",
         fetcher
     );
+    const router = useRouter()
     return (
         <>
             <Title mb={20}>Home Page</Title>
@@ -57,11 +58,15 @@ export default function HomePage() {
                         <Timeline mb={20} bulletSize={24} lineWidth={2}>
                             {data.threads.map((th, id) => (
                                 <Timeline.Item
+                                    style={{cursor: "pointer"}}
+                                    onClick={() => router.push(`/thread/${th.id}`)}
                                     className="comment-content"
                                     sx={{ img: { maxWidth: "100%" } }}
                                     key={id}
                                     bullet={<ReaderIcon scale={2} />}
-                                    title={<Anchor href="#">{th.title}</Anchor>}
+                                    title={<Anchor onClick={(e: any) => {
+                                      e.preventDefault()
+                                    }} href={`/thread/${th.id}`}>{th.title}</Anchor>}
                                 >
                                     <Text size="sm">
                                         Created{" "}

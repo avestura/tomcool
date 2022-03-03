@@ -1,4 +1,4 @@
-import { Code } from "@mantine/core";
+import { Anchor, Code } from "@mantine/core";
 import { Prism } from "@mantine/prism";
 import { ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
@@ -23,6 +23,7 @@ export const ContentRenderer = (props: { children: string }) => {
                         </Code>
                     );
                 },
+                "a": Anchor
             }}
         >
             {props.children}
