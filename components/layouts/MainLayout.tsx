@@ -37,7 +37,7 @@ export default function MainLayout(props: { children: React.ReactNode }) {
                     // when viewport size is less than theme.breakpoints.sm navbar width is 100%
                     // viewport size > theme.breakpoints.sm – width is 300px
                     // viewport size > theme.breakpoints.lg – width is 400px
-                    width={{ sm: 300, lg: 400 }}
+                    width={{ sm: 250, lg: 250 }}
                 >
                     <Navbar.Section grow mt="xs">
                         <MainLinks />
