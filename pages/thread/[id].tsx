@@ -84,7 +84,7 @@ const ThreadViewer = (props: {
             <Title order={2} mb={10}>
                 {t.title}
             </Title>
-            <Paper padding="md" shadow="sm" mb={20}>
+            <Paper className="thread-content" sx={{'img': {maxWidth: "100%"}}} padding="md" shadow="sm" mb={20}>
             <ContentRenderer>{t.text}</ContentRenderer>
             </Paper>
             <Divider mb={20} variant="dashed" />
@@ -92,6 +92,8 @@ const ThreadViewer = (props: {
             <Timeline mb={20} bulletSize={24} lineWidth={2}>
                 {t.replies.map((r, id) => (
                     <Timeline.Item
+                        className="comment-content"
+                        sx={{'img': {maxWidth: "100%"}}}
                         key={id}
                         bullet={<ChatBubbleIcon scale={2} />}
                         title={r.hash}
