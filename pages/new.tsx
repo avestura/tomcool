@@ -6,8 +6,9 @@ import {
     Button,
     InputWrapper,
     Notification,
+    Textarea,
 } from "@mantine/core";
-import { useForm } from "@mantine/hooks";
+import { useForm, useLocalStorageValue } from "@mantine/hooks";
 import { useNotifications } from "@mantine/notifications";
 import { Cross1Icon } from "@modulz/radix-icons";
 import axios from "axios";
@@ -23,6 +24,11 @@ export default function HomePage() {
             title: "",
             content: "",
         },
+    });
+
+    const [editor, setEditor] = useLocalStorageValue<"plain" | "rich">({
+        key: "editor",
+        defaultValue: "rich",
     });
 
     const [loading, setLoading] = useState(false);
@@ -52,7 +58,7 @@ export default function HomePage() {
                 setLoading(false);
                 notifications.showNotification({
                     title: "Error",
-                    message: err.message ? err.message : "Failed to submit" ,
+                    message: err.message ? err.message : "Failed to submit",
                     color: "red",
                     icon: <Cross1Icon />,
                 });
@@ -73,23 +79,38 @@ export default function HomePage() {
                 />
 
                 <InputWrapper mb={10} required label="Content">
-                    <RichTextEditor
-                        readOnly={loading}
-                        value=""
-                        controls={[
-                            ["bold", "italic", "underline", "clean"],
-                            ["h1", "h2", "h3", "h4", "h5", "h6"],
-                            ["unorderedList", "orderedList"],
-                            ["link", "video", "image", "blockquote"],
-                            ["code", "codeBlock"],
-                            ["sup", "sub"],
-                        ]}
-                        {...form.getInputProps("content")}
-                    ></RichTextEditor>
+                    {editor === "rich" && (
+                        <RichTextEditor
+                            readOnly={loading}
+                            value=""
+                            controls={[
+                                ["bold", "italic", "underline", "clean"],
+                                ["h1", "h2", "h3", "h4", "h5", "h6"],
+                                ["unorderedList", "orderedList"],
+                                ["link", "video", "image", "blockquote"],
+                                ["code", "codeBlock"],
+                                ["sup", "sub"],
+                            ]}
+                            {...form.getInputProps("content")}
+                        ></RichTextEditor>
+                    )}
+
+                    {editor === "plain" && (
+                        <Textarea {...form.getInputProps("content")} />
+                    )}
                 </InputWrapper>
 
-                <Button loading={loading} type="submit">
+                <Button mr={10} loading={loading} type="submit">
                     Submit
+                </Button>
+
+                <Button
+                    color="gray"
+                    onClick={() =>
+                        setEditor((s) => (s === "plain" ? "rich" : "plain"))
+                    }
+                >
+                    Use {editor === "plain" ? "Rich" : "Simple"} Editor
                 </Button>
             </form>
         </>

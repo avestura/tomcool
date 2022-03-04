@@ -13,6 +13,7 @@ import {
     Button,
     Group,
     Menu,
+    Textarea,
 } from "@mantine/core";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
@@ -32,7 +33,7 @@ import axios from "axios";
 import { useNotifications } from "@mantine/notifications";
 import RichTextEditor from "../../components/RichTextEditor";
 import { ContentRenderer } from "../../components/ContentRenderer";
-import { useForm } from "@mantine/hooks";
+import { useForm, useLocalStorageValue } from "@mantine/hooks";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -47,6 +48,11 @@ const ThreadViewer = (props: {
         initialValues: {
             content: "",
         },
+    });
+
+    const [editor, setEditor] = useLocalStorageValue<"plain" | "rich">({
+        key: "editor",
+        defaultValue: "rich",
     });
 
     const [loading, setLoading] = useState(false);
@@ -136,8 +142,14 @@ const ThreadViewer = (props: {
                     </Menu.Item>
                     <Divider />
                     <Menu.Label>Storage</Menu.Label>
-                    <Menu.Item color="blue" icon={<DrawingPinIcon />}>Pin</Menu.Item>,
-                    <Menu.Item color="lime" icon={<DownloadIcon />}>Save in browser</Menu.Item>,
+                    <Menu.Item color="blue" icon={<DrawingPinIcon />}>
+                        Pin
+                    </Menu.Item>
+                    ,
+                    <Menu.Item color="lime" icon={<DownloadIcon />}>
+                        Save in browser
+                    </Menu.Item>
+                    ,
                     <Menu.Item color="lime" icon={<CubeIcon />}>
                         Save to IPFS
                     </Menu.Item>
@@ -174,24 +186,38 @@ const ThreadViewer = (props: {
                         },
                     }}
                 >
-                    <RichTextEditor
-                        readOnly={loading}
-                        value={form.values.content}
-                        controls={[
-                            ["bold", "italic", "underline", "clean"],
-                            ["h1", "h2", "h3", "h4", "h5", "h6"],
-                            ["unorderedList", "orderedList"],
-                            ["link", "video", "image", "blockquote"],
-                            ["code", "codeBlock"],
-                            ["sup", "sub"],
-                        ]}
-                        mentions={mentions}
-                        {...form.getInputProps("content")}
-                    ></RichTextEditor>
+                    {editor === "rich" && (
+                        <RichTextEditor
+                            readOnly={loading}
+                            value={form.values.content}
+                            controls={[
+                                ["bold", "italic", "underline", "clean"],
+                                ["h1", "h2", "h3", "h4", "h5", "h6"],
+                                ["unorderedList", "orderedList"],
+                                ["link", "video", "image", "blockquote"],
+                                ["code", "codeBlock"],
+                                ["sup", "sub"],
+                            ]}
+                            mentions={mentions}
+                            {...form.getInputProps("content")}
+                        ></RichTextEditor>
+                    )}
+                    { editor === "plain" && 
+                        <Textarea {...form.getInputProps("content")} />
+                    }
                 </InputWrapper>
 
-                <Button loading={loading} type="submit">
+                <Button mr={10} loading={loading} type="submit">
                     Submit
+                </Button>
+
+                <Button
+                    color="gray"
+                    onClick={() =>
+                        setEditor((s) => (s === "plain" ? "rich" : "plain"))
+                    }
+                >
+                    Use {editor === "plain" ? "Rich" : "Simple"} Editor
                 </Button>
             </form>
         </>
