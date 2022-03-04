@@ -109,11 +109,11 @@ const ThreadViewer = (props: {
     );
 
     const replyMemos = useMemo(() => {
-        return t.replies.map((r) => (
+        return t.replies.map((r, id) => (
             <Timeline.Item
                 className="comment-content"
                 sx={{ img: { maxWidth: "100%" } }}
-                key={r.hash}
+                key={id}
                 bullet={<ChatBubbleIcon scale={2} />}
                 title={r.hash}
             >

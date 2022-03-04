@@ -56,13 +56,13 @@ export default function HomePage() {
                 <>
                     {data.ok ? (
                         <Timeline mb={20} bulletSize={24} lineWidth={2}>
-                            {data.threads.map((th) => (
+                            {data.threads.map((th, i) => (
                                 <Timeline.Item
                                     style={{cursor: "pointer"}}
                                     onClick={() => router.push(`/thread/${th.id}`)}
                                     className="comment-content"
                                     sx={{ img: { maxWidth: "100%" } }}
-                                    key={th.hash}
+                                    key={i}
                                     bullet={<ReaderIcon scale={2} />}
                                     title={<Anchor onClick={(e: any) => {
                                       e.preventDefault()
