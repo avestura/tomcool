@@ -3,6 +3,7 @@ import { useState } from "react";
 import {
     ActionIcon,
     Affix,
+    Anchor,
     AppShell,
     Burger,
     Button,
@@ -19,13 +20,14 @@ import { ArrowUpIcon, MoonIcon, SunIcon } from "@modulz/radix-icons";
 import { MainLinks } from "./_mainLinks";
 import { User } from "./_user";
 import { useWindowScroll } from "@mantine/hooks";
+import { useRouter } from "next/router";
 
 export default function MainLayout(props: { children: React.ReactNode }) {
     const [opened, setOpened] = useState(false);
     const theme = useMantineTheme();
     const { colorScheme, toggleColorScheme } = useMantineColorScheme();
     const [scroll, scrollTo] = useWindowScroll();
-
+    const router = useRouter();
 
     const closeCurtain = () => setOpened(false);
     return (
@@ -78,7 +80,9 @@ export default function MainLayout(props: { children: React.ReactNode }) {
                                 mr="xl"
                             />
                         </MediaQuery>
-                        <Text>Thomas&apos;s Cool Forum Software</Text>
+                        <Anchor onClick={() => router.push("/")}>
+                            Thomas&apos;s Cool Forum Software
+                        </Anchor>
                         <ActionIcon
                             variant="default"
                             onClick={() => toggleColorScheme()}
