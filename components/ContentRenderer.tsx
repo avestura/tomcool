@@ -1,15 +1,20 @@
 import { Anchor, Blockquote, Code } from "@mantine/core";
 import { Prism } from "@mantine/prism";
-import { ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
+import rehypeKatex from 'rehype-katex'
+import remarkMath  from 'remark-math';
+
+import 'katex/dist/katex.min.css'
 
 export const ContentRenderer = (props: { children: string }) => {
     return (
         <ReactMarkdown
             disallowedElements={["script", "media", "iframe"]}
             skipHtml={false}
-            rehypePlugins={[rehypeRaw]}
+            rehypePlugins={[rehypeRaw, rehypeKatex]}
+            remarkPlugins={[remarkMath]}
+            
             components={{
                 code({ node, inline, className, children, ...props }) {
                     const match = /language-(\w+)/.exec(className || "");
@@ -26,7 +31,8 @@ export const ContentRenderer = (props: { children: string }) => {
                 "a": Anchor,
                 blockquote({children, node}) {
                     return <Blockquote>{children}</Blockquote>
-                }
+                },
+
             }}
         >
             {props.children}
