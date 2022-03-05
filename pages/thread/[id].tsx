@@ -14,6 +14,7 @@ import {
     Group,
     Menu,
     Textarea,
+    Tabs,
 } from "@mantine/core";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
@@ -186,25 +187,47 @@ const ThreadViewer = (props: {
                         },
                     }}
                 >
-                    {editor === "rich" && (
-                        <RichTextEditor
-                            readOnly={loading}
-                            value={form.values.content}
-                            controls={[
-                                ["bold", "italic", "underline", "clean"],
-                                ["h1", "h2", "h3", "h4", "h5", "h6"],
-                                ["unorderedList", "orderedList"],
-                                ["link", "video", "image", "blockquote"],
-                                ["code", "codeBlock"],
-                                ["sup", "sub"],
-                            ]}
-                            mentions={mentions}
-                            {...form.getInputProps("content")}
-                        ></RichTextEditor>
-                    )}
-                    { editor === "plain" && 
-                        <Textarea {...form.getInputProps("content")} />
-                    }
+                    <Tabs>
+                        <Tabs.Tab label="Editor">
+                            {editor === "rich" && (
+                                <RichTextEditor
+                                    readOnly={loading}
+                                    value={form.values.content}
+                                    controls={[
+                                        [
+                                            "bold",
+                                            "italic",
+                                            "underline",
+                                            "clean",
+                                        ],
+                                        ["h1", "h2", "h3", "h4", "h5", "h6"],
+                                        ["unorderedList", "orderedList"],
+                                        [
+                                            "link",
+                                            "video",
+                                            "image",
+                                            "blockquote",
+                                        ],
+                                        ["code", "codeBlock"],
+                                        ["sup", "sub"],
+                                    ]}
+                                    mentions={mentions}
+                                    {...form.getInputProps("content")}
+                                ></RichTextEditor>
+                            )}
+                            {editor === "plain" && (
+                                <Textarea
+                                    autosize
+                                    {...form.getInputProps("content")}
+                                />
+                            )}
+                        </Tabs.Tab>
+                        <Tabs.Tab label="Preview">
+                            <ContentRenderer>
+                                {form.values.content}
+                            </ContentRenderer>
+                        </Tabs.Tab>
+                    </Tabs>
                 </InputWrapper>
 
                 <Button mr={10} loading={loading} type="submit">

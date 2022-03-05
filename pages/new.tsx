@@ -7,6 +7,7 @@ import {
     InputWrapper,
     Notification,
     Textarea,
+    Tabs,
 } from "@mantine/core";
 import { useForm, useLocalStorageValue } from "@mantine/hooks";
 import { useNotifications } from "@mantine/notifications";
@@ -14,6 +15,7 @@ import { Cross1Icon } from "@modulz/radix-icons";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { ContentRenderer } from "../components/ContentRenderer";
 import RichTextEditor from "../components/RichTextEditor";
 
 export default function HomePage() {
@@ -79,25 +81,44 @@ export default function HomePage() {
                 />
 
                 <InputWrapper mb={10} required label="Content">
-                    {editor === "rich" && (
-                        <RichTextEditor
-                            readOnly={loading}
-                            value=""
-                            controls={[
-                                ["bold", "italic", "underline", "clean"],
-                                ["h1", "h2", "h3", "h4", "h5", "h6"],
-                                ["unorderedList", "orderedList"],
-                                ["link", "video", "image", "blockquote"],
-                                ["code", "codeBlock"],
-                                ["sup", "sub"],
-                            ]}
-                            {...form.getInputProps("content")}
-                        ></RichTextEditor>
-                    )}
+                    <Tabs>
+                        <Tabs.Tab label="Editor">
+                            {editor === "rich" && (
+                                <RichTextEditor
+                                    readOnly={loading}
+                                    value=""
+                                    controls={[
+                                        [
+                                            "bold",
+                                            "italic",
+                                            "underline",
+                                            "clean",
+                                        ],
+                                        ["h1", "h2", "h3", "h4", "h5", "h6"],
+                                        ["unorderedList", "orderedList"],
+                                        [
+                                            "link",
+                                            "video",
+                                            "image",
+                                            "blockquote",
+                                        ],
+                                        ["code", "codeBlock"],
+                                        ["sup", "sub"],
+                                    ]}
+                                    {...form.getInputProps("content")}
+                                ></RichTextEditor>
+                            )}
 
-                    {editor === "plain" && (
-                        <Textarea {...form.getInputProps("content")} />
-                    )}
+                            {editor === "plain" && (
+                                <Textarea autosize {...form.getInputProps("content")} />
+                            )}
+                        </Tabs.Tab>
+                        <Tabs.Tab label="Preview">
+                            <ContentRenderer>
+                                {form.values.content}
+                            </ContentRenderer>
+                        </Tabs.Tab>
+                    </Tabs>
                 </InputWrapper>
 
                 <Button mr={10} loading={loading} type="submit">

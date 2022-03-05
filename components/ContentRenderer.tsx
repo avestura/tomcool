@@ -19,7 +19,7 @@ export const ContentRenderer = (props: { children: string }) => {
                 code({ node, inline, className, children, ...props }) {
                     const match = /language-(\w+)/.exec(className || "");
                     return !inline && match ? (
-                        <Prism language={match[1] as any} {...props}>
+                        <Prism withLineNumbers language={match[1] as any} {...props}>
                             {String(children).replace(/\n$/, "")}
                         </Prism>
                     ) : (
