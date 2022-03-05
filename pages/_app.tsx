@@ -10,6 +10,16 @@ import { useState } from "react";
 import { useColorScheme, useLocalStorageValue } from "@mantine/hooks";
 import { NotificationsProvider } from "@mantine/notifications";
 
+// @ts-ignore
+import PrismRenderer from "prism-react-renderer/prism";
+
+((typeof global !== "undefined" ? global : window) as any).Prism = PrismRenderer;
+
+require("prismjs/components/prism-zig");
+require("prismjs/components/prism-fsharp");
+require("prismjs/components/prism-rust");
+
+
 import NProgress from 'nprogress'
 import Router from 'next/router'
 import 'nprogress/nprogress.css'
