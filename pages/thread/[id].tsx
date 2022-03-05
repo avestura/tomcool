@@ -25,8 +25,10 @@ import {
     CrossCircledIcon,
     CubeIcon,
     DownloadIcon,
+    DrawingPinFilledIcon,
     DrawingPinIcon,
     GlobeIcon,
+    PinTopIcon,
 } from "@modulz/radix-icons";
 import useSWR from "swr";
 import { Thread, ThreadResponse } from "../../models/ThomasForumModels";
@@ -35,6 +37,7 @@ import { useNotifications } from "@mantine/notifications";
 import RichTextEditor from "../../components/RichTextEditor";
 import { ContentRenderer } from "../../components/ContentRenderer";
 import { useForm, useLocalStorageValue } from "@mantine/hooks";
+import { usePins } from "../../lib/pins";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -57,6 +60,24 @@ const ThreadViewer = (props: {
     });
 
     const [loading, setLoading] = useState(false);
+
+    const { addPin, removePin, hasPin } = usePins();
+
+    const [isPinned, setIsPinned] = useState(hasPin(props.id))
+
+    const pinMenuItemClick = () => {
+        if (hasPin(props.id)) {
+            removePin(props.id);
+        } else {
+            addPin({
+                id: props.id,
+                created: t.created,
+                title: t.title,
+                hash: t.hash,
+            });
+        }
+        setIsPinned(hasPin(props.id))
+    };
 
     const submit = form.onSubmit((values) => {
         setLoading(true);
@@ -143,8 +164,8 @@ const ThreadViewer = (props: {
                     </Menu.Item>
                     <Divider />
                     <Menu.Label>Storage</Menu.Label>
-                    <Menu.Item color="blue" icon={<DrawingPinIcon />}>
-                        Pin
+                    <Menu.Item color="blue" onClick={pinMenuItemClick} icon={isPinned ? <DrawingPinFilledIcon /> : <DrawingPinIcon />}>
+                        { isPinned ? 'Unpin' : 'Pin'}
                     </Menu.Item>
                     ,
                     <Menu.Item color="lime" icon={<DownloadIcon />}>
