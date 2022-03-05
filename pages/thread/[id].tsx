@@ -243,6 +243,7 @@ const ThreadViewer = (props: {
                     Use {editor === "plain" ? "Rich" : "Simple"} Editor
                 </Button>
             </form>
+            <br />
         </>
     );
 };
