@@ -31,12 +31,12 @@ import {
     PinTopIcon,
 } from "@modulz/radix-icons";
 import useSWR from "swr";
-import { Thread, ThreadResponse } from "../../models/ThomasForumModels";
+import { Reply, Thread, ThreadResponse } from "../../models/ThomasForumModels";
 import axios from "axios";
 import { useNotifications } from "@mantine/notifications";
 import RichTextEditor from "../../components/RichTextEditor";
 import { ContentRenderer } from "../../components/ContentRenderer";
-import { useForm, useLocalStorageValue } from "@mantine/hooks";
+import { useForm, useLocalStorageValue, useToggle } from "@mantine/hooks";
 import { usePins } from "../../lib/pins";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -63,7 +63,7 @@ const ThreadViewer = (props: {
 
     const { addPin, removePin, hasPin } = usePins();
 
-    const [isPinned, setIsPinned] = useState(hasPin(props.id))
+    const [isPinned, setIsPinned] = useState(hasPin(props.id));
 
     const pinMenuItemClick = () => {
         if (hasPin(props.id)) {
@@ -76,7 +76,7 @@ const ThreadViewer = (props: {
                 hash: t.hash,
             });
         }
-        setIsPinned(hasPin(props.id))
+        setIsPinned(hasPin(props.id));
     };
 
     const submit = form.onSubmit((values) => {
@@ -164,8 +164,18 @@ const ThreadViewer = (props: {
                     </Menu.Item>
                     <Divider />
                     <Menu.Label>Storage</Menu.Label>
-                    <Menu.Item color="blue" onClick={pinMenuItemClick} icon={isPinned ? <DrawingPinFilledIcon /> : <DrawingPinIcon />}>
-                        { isPinned ? 'Unpin' : 'Pin'}
+                    <Menu.Item
+                        color="blue"
+                        onClick={pinMenuItemClick}
+                        icon={
+                            isPinned ? (
+                                <DrawingPinFilledIcon />
+                            ) : (
+                                <DrawingPinIcon />
+                            )
+                        }
+                    >
+                        {isPinned ? "Unpin" : "Pin"}
                     </Menu.Item>
                     ,
                     <Menu.Item color="lime" icon={<DownloadIcon />}>

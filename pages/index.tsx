@@ -9,6 +9,7 @@ import {
     Skeleton,
     Timeline,
     Badge,
+    Tooltip,
 } from "@mantine/core";
 import {
     ChatBubbleIcon,
@@ -79,23 +80,36 @@ export default function HomePage() {
                                 >
                                     <Text size="sm">
                                         Created{" "}
-                                        {formatDistance(
-                                            new Date(th.created),
-                                            new Date(),
-                                            { addSuffix: true }
-                                        )}
+                                        <Tooltip withArrow label={th.modified}>
+                                            {formatDistance(
+                                                new Date(th.created),
+                                                new Date(),
+                                                { addSuffix: true }
+                                            )}
+                                        </Tooltip>
                                         {th.created !== th.modified && (
                                             <>
                                                 , Modified{" "}
-                                                {formatDistance(
-                                                    new Date(th.modified),
-                                                    new Date(),
-                                                    { addSuffix: true }
-                                                )}
+                                                <Tooltip
+                                                    withArrow
+                                                    label={th.modified}
+                                                >
+                                                    {formatDistance(
+                                                        new Date(th.modified),
+                                                        new Date(),
+                                                        { addSuffix: true }
+                                                    )}
+                                                </Tooltip>
                                             </>
                                         )}
-                                        ,&nbsp;
-                                        <Badge>{th.hash}</Badge>
+                                        &nbsp;
+                                        <Badge
+                                            styles={{
+                                                root: { textTransform: "none" },
+                                            }}
+                                        >
+                                            {th.hash}
+                                        </Badge>
                                     </Text>
                                 </Timeline.Item>
                             ))}
