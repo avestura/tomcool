@@ -4,6 +4,9 @@ import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeKatex from 'rehype-katex'
 import remarkMath  from 'remark-math';
+import remarkGemoji from 'remark-gemoji'
+import remarkBreaks from 'remark-breaks'
+import rehypeExternalLinks from 'rehype-external-links'
 
 import 'katex/dist/katex.min.css'
 
@@ -12,14 +15,14 @@ export const ContentRenderer = (props: { children: string }) => {
         <ReactMarkdown
             disallowedElements={["script", "media", "iframe"]}
             skipHtml={false}
-            rehypePlugins={[rehypeRaw, rehypeKatex]}
-            remarkPlugins={[remarkMath]}
+            rehypePlugins={[rehypeRaw, rehypeKatex, rehypeExternalLinks]}
+            remarkPlugins={[remarkMath, remarkGemoji, remarkBreaks]}
             
             components={{
                 code({ node, inline, className, children, ...props }) {
                     const match = /language-(\w+)/.exec(className || "");
-                    return !inline && match ? (
-                        <Prism withLineNumbers language={match[1] as any} {...props}>
+                    return !inline ? (
+                        <Prism withLineNumbers language={match ? match[1] as any : undefined} {...props}>
                             {String(children).replace(/\n$/, "")}
                         </Prism>
                     ) : (
