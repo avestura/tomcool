@@ -38,6 +38,7 @@ import RichTextEditor from "../../components/RichTextEditor";
 import { ContentRenderer } from "../../components/ContentRenderer";
 import { useForm, useLocalStorageValue, useToggle } from "@mantine/hooks";
 import { usePins } from "../../lib/pins";
+import { useThreadModificationDates } from "../../lib/newThreads";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -299,6 +300,12 @@ const Post = () => {
             : null,
         fetcher
     );
+    const {visitNewThread} = useThreadModificationDates()
+    useEffect(() => {
+        if(id && !Array.isArray(id) && !error && data && data.ok && data.thread) {
+            visitNewThread(parseInt(id), data.thread.modified)
+        }
+    }, [id, error, data, visitNewThread])
     return (
         <>
             {error && (

@@ -10,6 +10,7 @@ import {
     Timeline,
     Badge,
     Tooltip,
+    Group,
 } from "@mantine/core";
 import {
     ChatBubbleIcon,
@@ -17,10 +18,11 @@ import {
     ReaderIcon,
 } from "@modulz/radix-icons";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useSWR from "swr";
 import { RecentThreadResponse } from "../models/ThomasForumModels";
 import { formatDistance } from "date-fns";
+import { useThreadModificationDates } from "../lib/newThreads";
 
 const ContentLoading = (props: {}) => {
     return (
@@ -39,6 +41,12 @@ export default function HomePage() {
         "https://forums.trgwii.com/api/thread/recent",
         fetcher
     );
+    const { purgeOldData, isNewThread } = useThreadModificationDates();
+    useEffect(() => {
+        if (data && data.ok) {
+            purgeOldData(data.threads.map((x) => x.id));
+        }
+    }, [data, purgeOldData]);
     const router = useRouter();
     return (
         <>
@@ -68,14 +76,25 @@ export default function HomePage() {
                                     key={i}
                                     bullet={<ReaderIcon scale={2} />}
                                     title={
-                                        <Anchor
-                                            onClick={(e: any) => {
-                                                e.preventDefault();
-                                            }}
-                                            href={`/thread/${th.id}`}
-                                        >
-                                            {th.title}
-                                        </Anchor>
+                                        <>
+                                            <Anchor
+                                                onClick={(e: any) => {
+                                                    e.preventDefault();
+                                                }}
+                                                href={`/thread/${th.id}`}
+                                            >
+                                                {th.title}
+                                            </Anchor>
+                                            &nbsp;
+                                            {isNewThread(
+                                                th.id,
+                                                th.modified
+                                            ) && (
+                                                <Badge sx={{verticalAlign: "middle"}} variant="dot" size="xs">
+                                                    new
+                                                </Badge>
+                                            )}
+                                        </>
                                     }
                                 >
                                     <Text size="sm">
