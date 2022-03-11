@@ -35,7 +35,8 @@
     "remark-breaks": "^3.0.2",
     "remark-gemoji": "^7.0.1",
     "remark-math": "^5.1.1",
-    "swr": "^1.2.2"
+    "swr": "^1.2.2",
+    "unist-util-visit": "^4.1.0"
   },
   "devDependencies": {
     "@types/node": "17.0.21",

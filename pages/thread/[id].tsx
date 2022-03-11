@@ -15,6 +15,8 @@ import {
     Menu,
     Textarea,
     Tabs,
+    Card,
+    Tooltip,
 } from "@mantine/core";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
@@ -39,6 +41,7 @@ import { ContentRenderer } from "../../components/ContentRenderer";
 import { useForm, useLocalStorageValue, useToggle } from "@mantine/hooks";
 import { usePins } from "../../lib/pins";
 import { useThreadModificationDates } from "../../lib/newThreads";
+import { formatDistance } from "date-fns";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -108,9 +111,12 @@ const ThreadViewer = (props: {
                 setLoading(false);
                 notifications.showNotification({
                     title: "Error",
-                    message: err.response?.data?.error ? err.response.data.error : 
-                             err.message ? err.message : "Failed to submit",
-                     color: "red",
+                    message: err.response?.data?.error
+                        ? err.response.data.error
+                        : err.message
+                        ? err.message
+                        : "Failed to submit",
+                    color: "red",
                     icon: <Cross1Icon />,
                 });
             });
@@ -138,18 +144,49 @@ const ThreadViewer = (props: {
         [t]
     );
 
-    const replyMemos = useMemo(() => {
-        return t.replies.map((r, id) => (
-            <Timeline.Item
+    const ReplyView = (props: { r: Reply }) => {
+        const r = props.r;
+
+        return (
+            <Card
+                mb={10}
+                shadow="sm"
                 className="comment-content"
-                sx={{ img: { maxWidth: "100%" }, "overflowWrap": "anywhere" }}
-                key={id}
-                bullet={<ChatBubbleIcon scale={2} />}
-                title={r.hash}
+                sx={{ img: { maxWidth: "100%" }, overflowWrap: "anywhere" }}
             >
-                <ContentRenderer>{r.text}</ContentRenderer>
-            </Timeline.Item>
-        ));
+                <Card.Section
+                    sx={(t) => ({
+                        background:
+                            t.colorScheme === "light"
+                                ? t.colors.gray[2]
+                                : t.colors.gray[8],
+                    })}
+                >
+                    <Group sx={{ padding: 5 }} spacing="xs">
+                        <ChatBubbleIcon style={{ marginLeft: 5 }} />
+                        <Text>{r.hash}</Text>
+                        <Text size="xs">
+                            {r.created
+                                ? <Tooltip label={r.created} withArrow>{formatDistance(
+                                    new Date(r.created),
+                                    new Date(),
+                                    { addSuffix: true }
+                                )}</Tooltip>
+                                : ""}
+                        </Text>
+                    </Group>
+                </Card.Section>
+                <Card.Section>
+                    <div style={{margin: "0 20px"}}>
+                    <ContentRenderer>{r.text}</ContentRenderer>
+                    </div>
+                </Card.Section>
+            </Card>
+        );
+    };
+
+    const replyMemos = useMemo(() => {
+        return t.replies.map((r, id) => <ReplyView r={r} key={id} />);
     }, [t]);
 
     return (
@@ -198,14 +235,12 @@ const ThreadViewer = (props: {
             >
                 <ContentRenderer>{t.text}</ContentRenderer>
             </Paper>
-            <Divider mb={20} variant="dashed" />
+            {/* <Divider mb={20} variant="dashed" /> */}
             {t.replies.length === 0 && (
                 <Text>No replies. Be first to reply!</Text>
             )}
-            <Timeline mb={20} bulletSize={24} lineWidth={2}>
-                {replyMemos}
-            </Timeline>
-            <Divider mb={20} variant="dashed" />
+            <div style={{ marginBottom: 20 }}>{replyMemos}</div>
+            {/* <Divider mb={20} variant="dashed" /> */}
             <Title order={3} mb={5}>
                 Post a reply
             </Title>
@@ -301,12 +336,19 @@ const Post = () => {
             : null,
         fetcher
     );
-    const {visitNewThread} = useThreadModificationDates()
+    const { visitNewThread } = useThreadModificationDates();
     useEffect(() => {
-        if(id && !Array.isArray(id) && !error && data && data.ok && data.thread) {
-            visitNewThread(parseInt(id), data.thread.modified)
+        if (
+            id &&
+            !Array.isArray(id) &&
+            !error &&
+            data &&
+            data.ok &&
+            data.thread
+        ) {
+            visitNewThread(parseInt(id), data.thread.modified);
         }
-    }, [id, error, data, visitNewThread])
+    }, [id, error, data, visitNewThread]);
     return (
         <>
             {error && (

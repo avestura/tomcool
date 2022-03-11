@@ -1,6 +1,7 @@
 export type Reply = {
     hash: string,
-    text: string
+    text: string,
+    created?: string
 }
 
 export type RecentThread = {
