@@ -141,7 +141,7 @@ const ThreadViewer = (props: {
         return t.replies.map((r, id) => (
             <Timeline.Item
                 className="comment-content"
-                sx={{ img: { maxWidth: "100%" } }}
+                sx={{ img: { maxWidth: "100%" }, "overflowWrap": "anywhere" }}
                 key={id}
                 bullet={<ChatBubbleIcon scale={2} />}
                 title={r.hash}
