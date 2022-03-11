@@ -60,7 +60,8 @@ export default function HomePage() {
                 setLoading(false);
                 notifications.showNotification({
                     title: "Error",
-                    message: err.message ? err.message : "Failed to submit",
+                    message: err.response?.data?.error ? err.response.data.error : 
+                             err.message ? err.message : "Failed to submit",
                     color: "red",
                     icon: <Cross1Icon />,
                 });

@@ -108,8 +108,9 @@ const ThreadViewer = (props: {
                 setLoading(false);
                 notifications.showNotification({
                     title: "Error",
-                    message: err.message ? err.message : "Failed to submit",
-                    color: "red",
+                    message: err.response?.data?.error ? err.response.data.error : 
+                             err.message ? err.message : "Failed to submit",
+                     color: "red",
                     icon: <Cross1Icon />,
                 });
             });
