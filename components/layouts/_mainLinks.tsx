@@ -8,7 +8,9 @@ import {
 } from "@mantine/core";
 import {
     DrawingPinIcon,
+    GearIcon,
     HomeIcon,
+    InfoCircledIcon,
     PlusIcon,
     ThickArrowRightIcon,
 } from "@modulz/radix-icons";
@@ -74,6 +76,8 @@ const data = [
         label: "Navigate",
         path: "/goto",
     },
+    {icon: <GearIcon />, color: "teal", label: "Settings", path: "/settings" },
+    {icon: <InfoCircledIcon />, color: "gray", label: "About Project", path: "/about" },
 ];
 
 export function MainLinks(props: { closeCurtain?: () => void }) {

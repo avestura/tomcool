@@ -17,6 +17,8 @@ import {
     Tabs,
     Card,
     Tooltip,
+    useMantineTheme,
+    Badge,
 } from "@mantine/core";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
@@ -47,6 +49,9 @@ import { useThreadModificationDates } from "../../lib/newThreads";
 import { formatDistance } from "date-fns";
 import { useModals } from "@mantine/modals";
 import { Prism } from "@mantine/prism";
+import { colorizeString } from "../../lib/stringToColor";
+import { useMantineThemeStyles } from "@mantine/styles/lib/theme/MantineProvider";
+import { useSettings } from "../../lib/settings";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -136,9 +141,9 @@ const ThreadViewer = (props: {
                 renderList: Function,
                 mentionChar: string
             ) => {
-                const list = t.replies.map((r, i) => ({
+                const list = Array.from(new Set(t.replies.map(x => x.hash).reverse())).map((hash, i) => ({
                     id: i + 1,
-                    value: r.hash,
+                    value: hash,
                 }));
                 const includesSearchTerm = list.filter((item) =>
                     item.value.toLowerCase().includes(searchTerm.toLowerCase())
@@ -152,7 +157,9 @@ const ThreadViewer = (props: {
     const ReplyView = (props: { r: Reply }) => {
         const r = props.r;
         const [collapsed, setCollapsed] = useState(false);
+        const {colorizeReply} = useSettings()
         const modals = useModals()
+        const {colorScheme} = useMantineTheme()
         const openModal = () => modals.openModal({
             title: 'Raw Content',
             children: <Prism language="markdown">{r.text}</Prism>,
@@ -174,8 +181,8 @@ const ThreadViewer = (props: {
                     })}
                 >
                     <Group sx={{ padding: 5 }} spacing="xs">
-                        <ChatBubbleIcon style={{ marginLeft: 5 }} />
-                        <Text>{r.hash}</Text>
+                        <ChatBubbleIcon style={{ marginLeft: 5}} />
+                        <Text color={colorizeReply === "true" ? colorizeString(r.hash, colorScheme) : undefined}>{r.hash}</Text>
                         {r.created && (
                             <Text size="xs">
                                 {r.created ? (
@@ -234,6 +241,7 @@ const ThreadViewer = (props: {
                 <Title style={{ flexGrow: 1 }} order={2} mb={10}>
                     {t.title}
                 </Title>
+                <Badge variant="light" size="lg" mx={5}>{t.hash}</Badge>
                 <Menu>
                     <Menu.Label>Recover</Menu.Label>
                     <Menu.Item icon={<CubeIcon />}>Recover from IPFS</Menu.Item>
@@ -287,7 +295,7 @@ const ThreadViewer = (props: {
                 <InputWrapper
                     mb={10}
                     required
-                    label="Content (markdown is supported)"
+                    label={editor === "rich" ? "Content" : "Content (markdown is supported)"}
                     sx={{
                         ".ql-mention-list-container,.ql-container": {
                             zIndex: 99999,
@@ -320,7 +328,7 @@ const ThreadViewer = (props: {
                                     ]}
                                     mentions={mentions}
                                     {...form.getInputProps("content")}
-                                ></RichTextEditor>
+                                />
                             )}
                             {editor === "plain" && (
                                 <Textarea
