@@ -9,31 +9,32 @@ import MainLayout from "../components/layouts/MainLayout";
 import { useState } from "react";
 import { useColorScheme, useLocalStorageValue } from "@mantine/hooks";
 import { NotificationsProvider } from "@mantine/notifications";
+import { ModalsProvider } from "@mantine/modals";
 
 // @ts-ignore
 import PrismRenderer from "prism-react-renderer/prism";
 
-((typeof global !== "undefined" ? global : window) as any).Prism = PrismRenderer;
+((typeof global !== "undefined" ? global : window) as any).Prism =
+    PrismRenderer;
 
 require("prismjs/components/prism-zig");
 require("prismjs/components/prism-fsharp");
 require("prismjs/components/prism-rust");
 
-
-import NProgress from 'nprogress'
-import Router from 'next/router'
-import 'nprogress/nprogress.css'
+import NProgress from "nprogress";
+import Router from "next/router";
+import "nprogress/nprogress.css";
 
 NProgress.configure({
-  minimum: 0.3,
-  easing: 'ease',
-  speed: 800,
-  showSpinner: false,
-})
+    minimum: 0.3,
+    easing: "ease",
+    speed: 800,
+    showSpinner: false,
+});
 
-Router.events.on('routeChangeStart', () => NProgress.start())
-Router.events.on('routeChangeComplete', () => NProgress.done())
-Router.events.on('routeChangeError', () => NProgress.done())
+Router.events.on("routeChangeStart", () => NProgress.start());
+Router.events.on("routeChangeComplete", () => NProgress.done());
+Router.events.on("routeChangeError", () => NProgress.done());
 
 process.env.FORUM = "https://forums.trgwii.com";
 
@@ -55,7 +56,11 @@ export default function App(props: AppProps) {
                     name="viewport"
                     content="minimum-scale=1, initial-scale=1, width=device-width"
                 />
-                <link rel="icon" type="image/x-icon" href="/tomcool48.png"></link>
+                <link
+                    rel="icon"
+                    type="image/x-icon"
+                    href="/tomcool48.png"
+                ></link>
                 <link rel="icon" type="image/png" href="/tomcool48.png"></link>
             </Head>
 
@@ -68,11 +73,13 @@ export default function App(props: AppProps) {
                     withNormalizeCSS
                     theme={{ colorScheme }}
                 >
-                    <NotificationsProvider>
-                        <MainLayout>
-                            <Component {...pageProps} />
-                        </MainLayout>
-                    </NotificationsProvider>
+                    <ModalsProvider>
+                        <NotificationsProvider>
+                            <MainLayout>
+                                <Component {...pageProps} />
+                            </MainLayout>
+                        </NotificationsProvider>
+                    </ModalsProvider>
                 </MantineProvider>
             </ColorSchemeProvider>
         </>

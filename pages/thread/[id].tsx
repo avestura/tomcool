@@ -22,6 +22,9 @@ import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
 import {
     ChatBubbleIcon,
+    ChevronDownIcon,
+    ChevronUpIcon,
+    CodeIcon,
     CommitIcon,
     Cross1Icon,
     CrossCircledIcon,
@@ -42,6 +45,8 @@ import { useForm, useLocalStorageValue, useToggle } from "@mantine/hooks";
 import { usePins } from "../../lib/pins";
 import { useThreadModificationDates } from "../../lib/newThreads";
 import { formatDistance } from "date-fns";
+import { useModals } from "@mantine/modals";
+import { Prism } from "@mantine/prism";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -146,7 +151,13 @@ const ThreadViewer = (props: {
 
     const ReplyView = (props: { r: Reply }) => {
         const r = props.r;
-
+        const [collapsed, setCollapsed] = useState(false);
+        const modals = useModals()
+        const openModal = () => modals.openModal({
+            title: 'Raw Content',
+            children: <Prism language="markdown">{r.text}</Prism>,
+            size: "xl"
+        })
         return (
             <Card
                 mb={10}
@@ -158,29 +169,57 @@ const ThreadViewer = (props: {
                     sx={(t) => ({
                         background:
                             t.colorScheme === "light"
-                                ? t.colors.gray[2]
+                                ? t.colors.gray[1]
                                 : t.colors.gray[8],
                     })}
                 >
                     <Group sx={{ padding: 5 }} spacing="xs">
                         <ChatBubbleIcon style={{ marginLeft: 5 }} />
                         <Text>{r.hash}</Text>
-                        <Text size="xs">
-                            {r.created
-                                ? <Tooltip label={r.created} withArrow>{formatDistance(
-                                    new Date(r.created),
-                                    new Date(),
-                                    { addSuffix: true }
-                                )}</Tooltip>
-                                : ""}
-                        </Text>
+                        {r.created && (
+                            <Text size="xs">
+                                {r.created ? (
+                                    <Tooltip label={r.created} withArrow>
+                                        {formatDistance(
+                                            new Date(r.created),
+                                            new Date(),
+                                            { addSuffix: true }
+                                        )}
+                                    </Tooltip>
+                                ) : (
+                                    ""
+                                )}
+                            </Text>
+                        )}
+                        <div style={{ flexGrow: 1 }} />
+                        <Button
+                            onClick={() => setCollapsed((s) => !s)}
+                            color="gray"
+                            variant="subtle"
+                            size="xs"
+                            compact
+                        >
+                            {collapsed ? (
+                                <ChevronDownIcon />
+                            ) : (
+                                <ChevronUpIcon />
+                            )}
+                        </Button>
+                        <Menu>
+                            <Menu.Label>Developer Tools</Menu.Label>
+                            <Menu.Item onClick={openModal} icon={<CodeIcon />}>
+                                View Raw Content
+                            </Menu.Item>
+                        </Menu>
                     </Group>
                 </Card.Section>
-                <Card.Section>
-                    <div style={{margin: "0 20px"}}>
-                    <ContentRenderer>{r.text}</ContentRenderer>
-                    </div>
-                </Card.Section>
+                {!collapsed && (
+                    <Card.Section>
+                        <div style={{ margin: "0 20px" }}>
+                            <ContentRenderer>{r.text}</ContentRenderer>
+                        </div>
+                    </Card.Section>
+                )}
             </Card>
         );
     };
