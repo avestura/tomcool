@@ -14,7 +14,7 @@ import { useNotifications } from "@mantine/notifications";
 import { Cross1Icon } from "@modulz/radix-icons";
 import axios from "axios";
 import { useRouter } from "next/router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ContentRenderer } from "../components/ContentRenderer";
 import RichTextEditor from "../components/RichTextEditor";
 
@@ -81,7 +81,7 @@ export default function HomePage() {
                     {...form.getInputProps("title")}
                 />
 
-                <InputWrapper mb={10} required label="Content">
+                <InputWrapper mb={10} required label={editor === "rich" ? "Content" : "Content (markdown is supported)"}>
                     <Tabs>
                         <Tabs.Tab label="Editor">
                             {editor === "rich" && (
@@ -129,7 +129,13 @@ export default function HomePage() {
                 <Button
                     color="gray"
                     onClick={() =>
-                        setEditor((s) => (s === "plain" ? "rich" : "plain"))
+                        setEditor((s) => {
+                            if(s === 'rich' && form.values.content === "<p><br></p>") {
+                                form.setValues({ ...form.values, content: ""})
+                            }
+                             return (s === "plain" ? "rich" : "plain")
+                        })
+                        
                     }
                 >
                     Use {editor === "plain" ? "Rich" : "Simple"} Editor

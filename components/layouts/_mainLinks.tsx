@@ -11,6 +11,7 @@ import {
     GearIcon,
     HomeIcon,
     InfoCircledIcon,
+    MixIcon,
     PlusIcon,
     ThickArrowRightIcon,
 } from "@modulz/radix-icons";
@@ -69,6 +70,7 @@ function MainLink({ icon, color, label, path, closeCurtain }: MainLinkProps) {
 const data = [
     { icon: <HomeIcon />, color: "blue", label: "Home", path: "/" },
     { icon: <PlusIcon />, color: "lime", label: "New Thread", path: "/new" },
+    { icon: <MixIcon />, color: "yellow", label: "Boards", path: "/boards"},
     { icon: <DrawingPinIcon />, color: "violet", label: "Pins", path: "/pins" },
     {
         icon: <ThickArrowRightIcon />,

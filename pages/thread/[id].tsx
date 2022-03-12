@@ -352,7 +352,12 @@ const ThreadViewer = (props: {
                 <Button
                     color="gray"
                     onClick={() =>
-                        setEditor((s) => (s === "plain" ? "rich" : "plain"))
+                        setEditor((s) => {
+                            if(s === 'rich' && form.values.content === "<p><br></p>") {
+                                form.setValues({ content: ""})
+                            }
+                             return (s === "plain" ? "rich" : "plain")
+                        })
                     }
                 >
                     Use {editor === "plain" ? "Rich" : "Simple"} Editor
