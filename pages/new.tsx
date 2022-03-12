@@ -13,6 +13,7 @@ import { useForm, useLocalStorageValue } from "@mantine/hooks";
 import { useNotifications } from "@mantine/notifications";
 import { Cross1Icon } from "@modulz/radix-icons";
 import axios from "axios";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { ContentRenderer } from "../components/ContentRenderer";
@@ -60,8 +61,11 @@ export default function HomePage() {
                 setLoading(false);
                 notifications.showNotification({
                     title: "Error",
-                    message: err.response?.data?.error ? err.response.data.error : 
-                             err.message ? err.message : "Failed to submit",
+                    message: err.response?.data?.error
+                        ? err.response.data.error
+                        : err.message
+                        ? err.message
+                        : "Failed to submit",
                     color: "red",
                     icon: <Cross1Icon />,
                 });
@@ -70,6 +74,9 @@ export default function HomePage() {
 
     return (
         <>
+            <Head>
+                <title>Forum :: Submit Thread</title>
+            </Head>
             <form onSubmit={submit}>
                 <Title mb={20}>New Thread</Title>
                 <TextInput
@@ -81,7 +88,15 @@ export default function HomePage() {
                     {...form.getInputProps("title")}
                 />
 
-                <InputWrapper mb={10} required label={editor === "rich" ? "Content" : "Content (markdown is supported)"}>
+                <InputWrapper
+                    mb={10}
+                    required
+                    label={
+                        editor === "rich"
+                            ? "Content"
+                            : "Content (markdown is supported)"
+                    }
+                >
                     <Tabs>
                         <Tabs.Tab label="Editor">
                             {editor === "rich" && (
@@ -111,7 +126,10 @@ export default function HomePage() {
                             )}
 
                             {editor === "plain" && (
-                                <Textarea autosize {...form.getInputProps("content")} />
+                                <Textarea
+                                    autosize
+                                    {...form.getInputProps("content")}
+                                />
                             )}
                         </Tabs.Tab>
                         <Tabs.Tab label="Preview">
@@ -130,12 +148,14 @@ export default function HomePage() {
                     color="gray"
                     onClick={() =>
                         setEditor((s) => {
-                            if(s === 'rich' && form.values.content === "<p><br></p>") {
-                                form.setValues({ ...form.values, content: ""})
+                            if (
+                                s === "rich" &&
+                                form.values.content === "<p><br></p>"
+                            ) {
+                                form.setValues({ ...form.values, content: "" });
                             }
-                             return (s === "plain" ? "rich" : "plain")
+                            return s === "plain" ? "rich" : "plain";
                         })
-                        
                     }
                 >
                     Use {editor === "plain" ? "Rich" : "Simple"} Editor

@@ -70,7 +70,7 @@ function MainLink({ icon, color, label, path, closeCurtain }: MainLinkProps) {
 const data = [
     { icon: <HomeIcon />, color: "blue", label: "Home", path: "/" },
     { icon: <PlusIcon />, color: "lime", label: "New Thread", path: "/new" },
-    { icon: <MixIcon />, color: "yellow", label: "Boards", path: "/boards"},
+    { icon: <MixIcon />, color: "cyan", label: "Boards", path: "/boards"},
     { icon: <DrawingPinIcon />, color: "violet", label: "Pins", path: "/pins" },
     {
         icon: <ThickArrowRightIcon />,
@@ -78,7 +78,7 @@ const data = [
         label: "Navigate",
         path: "/goto",
     },
-    {icon: <GearIcon />, color: "teal", label: "Settings", path: "/settings" },
+    {icon: <GearIcon />, color: "teal", label: "Preferences", path: "/settings" },
     {icon: <InfoCircledIcon />, color: "gray", label: "About Project", path: "/about" },
 ];
 

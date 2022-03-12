@@ -6,8 +6,16 @@ export const useSettings = () => {
         defaultValue: 'true'
     })
 
+    const [editor, setEditor] = useLocalStorageValue<"plain" | "rich">({
+        key: "editor",
+        defaultValue: "rich",
+    });
+
     return {
         colorizeReply,
-        toggleColorizeReply: () => setColorizeReply(colorizeReply === 'true' ? 'false' : 'true')
+        toggleColorizeReply: () => setColorizeReply(colorizeReply === 'true' ? 'false' : 'true'),
+        editor,
+        toggleEditor: () => setEditor(ed => ed === "rich" ? "plain" : "rich"),
+        setEditor
     }
 }
