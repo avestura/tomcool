@@ -163,6 +163,7 @@ const ThreadViewer = (props: {
         const [collapsed, setCollapsed] = useState(false);
         const { colorizeReply } = useSettings();
         const modals = useModals();
+        const isOp = t.hash === r.hash;
         const { colorScheme } = useMantineTheme();
         const openModal = () =>
             modals.openModal({
@@ -196,6 +197,7 @@ const ThreadViewer = (props: {
                         >
                             {r.hash}
                         </Text>
+                        {isOp && <Badge variant="filled" radius="xs" size="sm">OP</Badge>}
                         {r.created && (
                             <Text size="xs">
                                 {r.created ? (
@@ -257,7 +259,14 @@ const ThreadViewer = (props: {
                 <Title style={{ flexGrow: 1 }} order={2} mb={10}>
                     {t.title}
                 </Title>
-                <Badge variant="light" size="lg" mx={5}>
+                <Badge
+                    styles={{
+                        root: { textTransform: "none" },
+                    }}
+                    variant="light"
+                    size="lg"
+                    mx={5}
+                >
                     {t.hash}
                 </Badge>
                 <Menu>
