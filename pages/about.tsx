@@ -11,7 +11,7 @@ export default function AboutPage() {
                 <Title>About Project</Title>
                 <Text>
                     you can learn more about this project and contribute to it
-                    using these link:
+                    using these links:
                 </Text>
                 <List>
                     <List.Item>
@@ -27,7 +27,7 @@ export default function AboutPage() {
                         </Anchor>
                     </List.Item>
                     <List.Item>
-                        Efficient binary serialization format.
+                        Efficient binary serialization format:&nbsp;
                         <Anchor href="https://github.com/trgwii/RoryBufs">
                             trgwii/RoryBufs
                         </Anchor>
