@@ -6,7 +6,7 @@ import {
     MantineProvider,
 } from "@mantine/core";
 import MainLayout from "../components/layouts/MainLayout";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useColorScheme, useLocalStorageValue } from "@mantine/hooks";
 import { NotificationsProvider } from "@mantine/notifications";
 import { ModalsProvider } from "@mantine/modals";
@@ -24,6 +24,7 @@ require("prismjs/components/prism-rust");
 import NProgress from "nprogress";
 import Router from "next/router";
 import "nprogress/nprogress.css";
+import { SettingsContext, useSettings, __useSettingValues } from "../lib/settings";
 
 NProgress.configure({
     minimum: 0.3,
@@ -47,6 +48,8 @@ export default function App(props: AppProps) {
     });
     const toggleColorScheme = (value?: ColorScheme) =>
         setColorScheme(value || (colorScheme === "dark" ? "light" : "dark"));
+
+    const settingValues = __useSettingValues()
 
     return (
         <>
@@ -75,9 +78,11 @@ export default function App(props: AppProps) {
                 >
                     <ModalsProvider>
                         <NotificationsProvider>
+                            <SettingsContext.Provider value={settingValues}>
                             <MainLayout>
                                 <Component {...pageProps} />
                             </MainLayout>
+                            </SettingsContext.Provider>
                         </NotificationsProvider>
                     </ModalsProvider>
                 </MantineProvider>

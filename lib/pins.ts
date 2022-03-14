@@ -1,41 +1,68 @@
-import { useLocalStorageValue } from "@mantine/hooks"
+import { useLocalStorageValue } from "@mantine/hooks";
 
 export type PinnedItem = {
-    id: number
-    title: string
-    created: string
-    hash: string
-}
+    id: number;
+    title: string;
+    created: string;
+    hash: string;
+    boardName: string;
+};
+
+export type BoardPins = {
+    [key: number]: PinnedItem;
+};
 
 export type Pins = {
-    [key: number]: PinnedItem
-}
+    [key: string]: BoardPins;
+};
 
 export const usePins = () => {
     const [pinsStr, setPinsStr] = useLocalStorageValue({
-        key: 'pins',
-        defaultValue: JSON.stringify({})
-    })
+        key: "pins",
+        defaultValue: JSON.stringify({}),
+    });
 
-    const pinsmap = JSON.parse(pinsStr) as Pins
+    const pinsmap = JSON.parse(pinsStr) as Pins;
 
     const addPin = (pin: PinnedItem) => {
-        pinsmap[pin.id] = pin
-        setPinsStr(JSON.stringify(pinsmap))
-    }
+        const boardPins = pinsmap[pin.boardName] || {};
+        boardPins[pin.id] = pin;
+        pinsmap[pin.boardName] = boardPins;
+        setPinsStr(JSON.stringify(pinsmap));
+    };
 
-    const getPin = (id: number) => pinsmap[id]
+    const getPin = (boardName: string, id: number) =>
+        pinsmap[boardName] ? pinsmap[boardName][id] : undefined;
 
-    const removePin = (id: number) => {
-        delete pinsmap[id]
-        setPinsStr(JSON.stringify(pinsmap))
-    }
+    const removePin = (boardName: string | undefined, id: number) => {
+        if (boardName && pinsmap[boardName]) {
+            delete pinsmap[boardName][id];
+            setPinsStr(JSON.stringify(pinsmap));
+        }
+        else {
+            delete pinsmap[id];
+            setPinsStr(JSON.stringify(pinsmap));
+        }
+    };
 
-    const hasPin = (id: number) => !!pinsmap[id]
+    const hasPin = (boardName: string, id: number) =>
+        pinsmap[boardName] && pinsmap[boardName][id];
 
-    const pinsCount = Object.keys(pinsmap).length
+    const pinsCount = Object.keys(pinsmap).reduce(
+        (acc, key) => acc + Object.keys(pinsmap[key]).length,
+        0
+    );
 
-    const pins = Object.values(pinsmap)
+    const pinsOf = (boardName: string) => Object.values(pinsmap[boardName]);
 
-    return { pins, pinsCount, addPin, getPin, removePin, hasPin }
-}
+    // because of old data
+    const pins = (Object.keys(pinsmap)
+        .map((x) => pinsmap[x])
+        .reduce<any>(
+            (acc, boardPins: any) => boardPins.id ? acc.concat(boardPins) : acc.concat(Object.values(boardPins)),
+            []
+        ) as PinnedItem[])
+        
+
+    return { pins, pinsOf, pinsCount, addPin, getPin, removePin, hasPin };
+};

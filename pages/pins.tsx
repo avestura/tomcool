@@ -37,9 +37,10 @@ export default function Pins() {
                                     mr={5}
                                     onClick={(e: any) => {
                                         e.preventDefault();
-                                        router.push(`/thread/${p.id}`);
+                                        const url = p.boardName ? `/b/${p.boardName}/${p.id}` : `/thread/${p.id}`
+                                        router.push(url);
                                     }}
-                                    href={`/thread/${p.id}`}
+                                    href={p.boardName ? `/b/${p.boardName}/${p.id}` : `/thread/${p.id}`}
                                 >
                                     {p.title}
                                 </Anchor>
@@ -47,7 +48,7 @@ export default function Pins() {
                                     size="xs"
                                     onClick={(e: any) => {
                                         e.preventDefault();
-                                        removePin(p.id);
+                                        removePin(p.boardName, p.id);
                                     }}
                                 >
                                     (Unpin)

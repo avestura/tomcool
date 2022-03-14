@@ -22,14 +22,21 @@ export type Thread = {
     replies: Reply[]
 }
 
-export type ThreadResponse = {
-    ok: boolean,
-    error: string,
-    thread: Thread
+export type Board = {
+    name: string,
+    description: string,
+    expiry: number
 }
 
-export type RecentThreadResponse = {
-    ok: boolean,
+export type ThomasResponse<T extends object> = {
+    ok: boolean
     error: string,
-    threads: RecentThread[]
-}
+} & T;
+
+export type ThreadResponse = ThomasResponse<{thread: Thread}>
+
+export type RecentThreadResponse = ThomasResponse<{threads: RecentThread[]}>
+
+export type BoardsResponse = ThomasResponse<{boards: Board[]}>
+
+export type BoradRecentThreadsResponse = ThomasResponse<{board: Board, threads: RecentThread[]}>

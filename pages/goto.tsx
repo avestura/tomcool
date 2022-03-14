@@ -9,9 +9,11 @@ import {
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import { useSettings } from "../lib/settings";
 
 export default function HomePage() {
     const [val, setVal] = useState<number | undefined>(1);
+    const {defaultBoard} = useSettings()
     const router = useRouter();
     return (
         <>
@@ -25,7 +27,7 @@ export default function HomePage() {
             <Button
                 onClick={() => {
                     if (val) {
-                        router.push(`/thread/${val}`);
+                        router.push(`/b/${defaultBoard}/${val}`);
                     }
                 }}
             >

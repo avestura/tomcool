@@ -1,4 +1,4 @@
-import { Anchor, Blockquote, Code } from "@mantine/core";
+import { Anchor, Blockquote, Code, Divider } from "@mantine/core";
 import { Prism } from "@mantine/prism";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
@@ -42,6 +42,10 @@ export const ContentRenderer = (props: { children: string }) => {
                 blockquote({ children, node }) {
                     return <Blockquote>{children}</Blockquote>;
                 },
+                hr({}) {
+                    return <Divider mb={5} variant="dotted" />
+                }
+
             }}
         >
             {props.children}

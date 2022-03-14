@@ -1,36 +1,72 @@
-import { useLocalStorageValue } from "@mantine/hooks"
-import { RecentThread } from "../models/ThomasForumModels"
+import { useLocalStorageValue } from "@mantine/hooks";
+import { RecentThread } from "../models/ThomasForumModels";
 
 export type ThreadModificationDates = {
-    [id: string]: string
-}
+    [threadId: string]: string;
+};
+
+export type BoardsModificationDates = {
+    [boardName: string]: ThreadModificationDates;
+};
 
 export const useThreadModificationDates = () => {
     const [modsDatesStr, setModsDatesStr] = useLocalStorageValue({
-        key: 'modificationDates',
-        defaultValue: JSON.stringify({})
-    })
+        key: "modificationDates",
+        defaultValue: JSON.stringify({}),
+    });
 
-    const modDates = JSON.parse(modsDatesStr) as ThreadModificationDates
+    const boardModDates = JSON.parse(modsDatesStr) as BoardsModificationDates;
 
-    const purgeOldData = (threadIds: number[]) => {
-        const newModsDates: ThreadModificationDates = {}
-        Object.keys(modDates).forEach(id => {
+    const purgeOldThreads = (boardName: string, threadIds: number[]) => {
+        const newModsDates: ThreadModificationDates = {};
+        const modDatesForThisBoard = boardModDates[boardName];
+        Object.keys(modDatesForThisBoard || {}).forEach((id) => {
             if (threadIds.includes(parseInt(id))) {
-                newModsDates[id] = modDates[id]
+                newModsDates[id] = modDatesForThisBoard[id];
             }
-        })
-        setModsDatesStr(JSON.stringify(newModsDates))
-    }
+        });
+        boardModDates[boardName] = newModsDates;
+        setModsDatesStr(JSON.stringify(boardModDates));
+    };
 
-    const isNewThread = (threadId: number, currentModDate: string) => {
-        return !modDates[threadId.toString()] || (modDates[threadId.toString()] !== currentModDate)
-    }
+    const isNewThread = (
+        boardName: string,
+        threadId: number,
+        currentModDate: string
+    ) => {
+        const modDates = boardModDates[boardName];
+        return (
+            modDates &&
+            (!modDates[threadId.toString()] ||
+                modDates[threadId.toString()] !== currentModDate)
+        );
+    };
 
-    const visitNewThread = (threadId: number, modDate: string) => {
-        modDates[threadId.toString()] = modDate
-        setModsDatesStr(JSON.stringify(modDates))
-    }
+    const visitNewThread = (
+        boardName: string,
+        threadId: number,
+        modDate: string
+    ) => {
+        const modDates = boardModDates[boardName] || {};
+        modDates[threadId.toString()] = modDate;
+        boardModDates[boardName] = modDates;
+        setModsDatesStr(JSON.stringify(boardModDates));
+    };
 
-    return { purgeOldData, isNewThread, visitNewThread }
-}
+    const purgeOldBoards = (boardNames: string[]) => {
+        const newBoardModsDates: BoardsModificationDates = {};
+        Object.keys(boardModDates).forEach((boardName) => {
+            if (boardNames.includes(boardName)) {
+                newBoardModsDates[boardName] = boardModDates[boardName];
+            }
+        });
+        setModsDatesStr(JSON.stringify(newBoardModsDates));
+    };
+
+    return {
+        purgeOldThreads,
+        isNewThread,
+        visitNewThread,
+        purgeOldBoards,
+    };
+};

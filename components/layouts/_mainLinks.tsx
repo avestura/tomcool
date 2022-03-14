@@ -16,6 +16,7 @@ import {
     ThickArrowRightIcon,
 } from "@modulz/radix-icons";
 import { useRouter } from "next/router";
+import { useSettings } from "../../lib/settings";
 
 interface MainLinkProps {
     icon: React.ReactNode;
@@ -68,9 +69,7 @@ function MainLink({ icon, color, label, path, closeCurtain }: MainLinkProps) {
 }
 
 const data = [
-    { icon: <HomeIcon />, color: "blue", label: "Home", path: "/" },
-    { icon: <PlusIcon />, color: "lime", label: "New Thread", path: "/new" },
-    { icon: <MixIcon />, color: "cyan", label: "Boards", path: "/boards"},
+    { icon: <MixIcon />, color: "cyan", label: "Boards", path: "/boards" },
     { icon: <DrawingPinIcon />, color: "violet", label: "Pins", path: "/pins" },
     {
         icon: <ThickArrowRightIcon />,
@@ -78,13 +77,40 @@ const data = [
         label: "Navigate",
         path: "/goto",
     },
-    {icon: <GearIcon />, color: "teal", label: "Preferences", path: "/settings" },
-    {icon: <InfoCircledIcon />, color: "gray", label: "About Project", path: "/about" },
+    {
+        icon: <GearIcon />,
+        color: "teal",
+        label: "Preferences",
+        path: "/settings",
+    },
+    {
+        icon: <InfoCircledIcon />,
+        color: "gray",
+        label: "About Project",
+        path: "/about",
+    },
 ];
 
 export function MainLinks(props: { closeCurtain?: () => void }) {
+    const { defaultBoard } = useSettings();
     const links = data.map((link) => (
-        <MainLink {...link} key={link.label} path={link.path} closeCurtain={props.closeCurtain} />
+        <MainLink
+            {...link}
+            key={link.label}
+            path={link.path}
+            closeCurtain={props.closeCurtain}
+        />
     ));
-    return <div>{links}</div>;
+    return (
+        <div>
+            <MainLink
+                color="blue"
+                icon={<HomeIcon />}
+                label="Home"
+                path={`/b/${defaultBoard}`}
+                closeCurtain={props.closeCurtain}
+            />
+            {links}
+        </div>
+    );
 }
