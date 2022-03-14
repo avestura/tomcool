@@ -2,18 +2,13 @@ import {
     Title,
     Text,
     Anchor,
-    InputWrapper,
-    Button,
-    NumberInput,
     Alert,
     Skeleton,
     Timeline,
     Badge,
     Tooltip,
-    Group,
 } from "@mantine/core";
 import {
-    ChatBubbleIcon,
     CrossCircledIcon,
     ReaderIcon,
 } from "@modulz/radix-icons";
@@ -120,8 +115,7 @@ export default function HomePage() {
                                                     )}
                                                 </Tooltip>
                                             </>
-                                        )}
-                                        &nbsp;
+                                        )}, {th.replies} replies&nbsp;
                                         <Badge
                                             styles={{
                                                 root: { textTransform: "none" },
