@@ -20,6 +20,7 @@ import {
     useMantineTheme,
     Badge,
     Anchor,
+    ActionIcon,
 } from "@mantine/core";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
@@ -219,25 +220,28 @@ const ThreadViewer = (props: {
                             </Text>
                         )}
                         <div style={{ flexGrow: 1 }} />
-                        <Button
-                            onClick={() => setCollapsed((s) => !s)}
-                            color="gray"
-                            variant="subtle"
-                            size="xs"
-                            compact
-                        >
-                            {collapsed ? (
-                                <ChevronDownIcon />
-                            ) : (
-                                <ChevronUpIcon />
-                            )}
-                        </Button>
-                        <Menu>
-                            <Menu.Label>Developer Tools</Menu.Label>
-                            <Menu.Item onClick={openModal} icon={<CodeIcon />}>
-                                View Raw Content
-                            </Menu.Item>
-                        </Menu>
+                        <Group spacing={0}>
+                            <ActionIcon
+                                onClick={() => setCollapsed((s) => !s)}
+                                color="gray"
+                                size="md"
+                            >
+                                {collapsed ? (
+                                    <ChevronDownIcon />
+                                ) : (
+                                    <ChevronUpIcon />
+                                )}
+                            </ActionIcon>
+                            <Menu>
+                                <Menu.Label>Developer Tools</Menu.Label>
+                                <Menu.Item
+                                    onClick={openModal}
+                                    icon={<CodeIcon />}
+                                >
+                                    View Raw Content
+                                </Menu.Item>
+                            </Menu>
+                        </Group>
                     </Group>
                 </Card.Section>
                 {!collapsed && (
@@ -259,89 +263,96 @@ const ThreadViewer = (props: {
     const replyForm = useMemo(() => {
         return (
             <>
-            <Title order={3} mb={5}>
-                Post a reply
-            </Title>
-            <form onSubmit={submit}>
-                <InputWrapper
-                    mb={10}
-                    required
-                    label={
-                        editor === "rich"
-                            ? "Content"
-                            : "Content (markdown is supported)"
-                    }
-                    sx={{
-                        ".ql-mention-list-container,.ql-container": {
-                            zIndex: 99999,
-                        },
-                    }}
-                >
-                    <Tabs>
-                        <Tabs.Tab label="Editor">
-                            {editor === "rich" && (
-                                <RichTextEditor
-                                    readOnly={loading}
-                                    value={form.values.content}
-                                    controls={[
-                                        [
-                                            "bold",
-                                            "italic",
-                                            "underline",
-                                            "clean",
-                                        ],
-                                        ["h1", "h2", "h3", "h4", "h5", "h6"],
-                                        ["unorderedList", "orderedList"],
-                                        [
-                                            "link",
-                                            "video",
-                                            "image",
-                                            "blockquote",
-                                        ],
-                                        ["code", "codeBlock"],
-                                        ["sup", "sub"],
-                                    ]}
-                                    mentions={mentions}
-                                    {...form.getInputProps("content")}
-                                />
-                            )}
-                            {editor === "plain" && (
-                                <Textarea
-                                    autosize
-                                    {...form.getInputProps("content")}
-                                />
-                            )}
-                        </Tabs.Tab>
-                        <Tabs.Tab label="Preview">
-                            <ContentRenderer>
-                                {form.values.content}
-                            </ContentRenderer>
-                        </Tabs.Tab>
-                    </Tabs>
-                </InputWrapper>
+                <Title order={3} mb={5}>
+                    Post a reply
+                </Title>
+                <form onSubmit={submit}>
+                    <InputWrapper
+                        mb={10}
+                        required
+                        label={
+                            editor === "rich"
+                                ? "Content"
+                                : "Content (markdown is supported)"
+                        }
+                        sx={{
+                            ".ql-mention-list-container,.ql-container": {
+                                zIndex: 99999,
+                            },
+                        }}
+                    >
+                        <Tabs>
+                            <Tabs.Tab label="Editor">
+                                {editor === "rich" && (
+                                    <RichTextEditor
+                                        readOnly={loading}
+                                        value={form.values.content}
+                                        controls={[
+                                            [
+                                                "bold",
+                                                "italic",
+                                                "underline",
+                                                "clean",
+                                            ],
+                                            [
+                                                "h1",
+                                                "h2",
+                                                "h3",
+                                                "h4",
+                                                "h5",
+                                                "h6",
+                                            ],
+                                            ["unorderedList", "orderedList"],
+                                            [
+                                                "link",
+                                                "video",
+                                                "image",
+                                                "blockquote",
+                                            ],
+                                            ["code", "codeBlock"],
+                                            ["sup", "sub"],
+                                        ]}
+                                        mentions={mentions}
+                                        {...form.getInputProps("content")}
+                                    />
+                                )}
+                                {editor === "plain" && (
+                                    <Textarea
+                                        autosize
+                                        {...form.getInputProps("content")}
+                                    />
+                                )}
+                            </Tabs.Tab>
+                            <Tabs.Tab label="Preview">
+                                <ContentRenderer>
+                                    {form.values.content}
+                                </ContentRenderer>
+                            </Tabs.Tab>
+                        </Tabs>
+                    </InputWrapper>
 
-                <Button mr={10} loading={loading} type="submit">
-                    Submit
-                </Button>
+                    <Button mr={10} loading={loading} type="submit">
+                        Submit
+                    </Button>
 
-                <Button
-                    color="gray"
-                    onClick={() =>
-                        setEditor((s) => {
-                            if (
-                                s === "rich" &&
-                                form.values.content === "<p><br></p>"
-                            ) {
-                                form.setValues({ content: "" });
-                            }
-                            return s === "plain" ? "rich" : "plain";
-                        })
-                    }
-                >
-                    Use {editor === "plain" ? "Rich" : "Simple"} Editor
-                </Button>
-            </form>
-            <br />
+                    <Button
+                        color="gray"
+                        onClick={() =>
+                            setEditor((s) => {
+                                if (
+                                    s === "rich" &&
+                                    form.values.content === "<p><br></p>"
+                                ) {
+                                    form.setValues({ content: "" });
+                                }
+                                return s === "plain" ? "rich" : "plain";
+                            })
+                        }
+                    >
+                        Use {editor === "plain" ? "Rich" : "Simple"} Editor
+                    </Button>
+                </form>
+                <br />
             </>
         );
     }, [editor, form, loading, mentions, setEditor, submit]);
@@ -405,12 +416,12 @@ const ThreadViewer = (props: {
             >
                 <ContentRenderer>{t.text}</ContentRenderer>
             </Paper>
-            { replyOrder === "newer-first" && replyForm }
+            {replyOrder === "newer-first" && replyForm}
             {t.replies.length === 0 && (
                 <Text>No replies. Be first to reply!</Text>
             )}
             <div style={{ marginBottom: 20 }}>{replyMemos}</div>
-            { replyOrder !== "newer-first" && replyForm }
+            {replyOrder !== "newer-first" && replyForm}
         </>
     );
 };
