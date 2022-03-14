@@ -11,11 +11,18 @@ export const useSettings = () => {
         defaultValue: "rich",
     });
 
+    const [replyOrder, setReplyOrder] = useLocalStorageValue<"newer-first" | "older-first">({
+        key: "replyOrder",
+        defaultValue: "older-first",
+    });
+
     return {
         colorizeReply,
         toggleColorizeReply: () => setColorizeReply(colorizeReply === 'true' ? 'false' : 'true'),
         editor,
         toggleEditor: () => setEditor(ed => ed === "rich" ? "plain" : "rich"),
-        setEditor
+        setEditor,
+        replyOrder,
+        setReplyOrder
     }
 }

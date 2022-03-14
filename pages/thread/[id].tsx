@@ -158,10 +158,11 @@ const ThreadViewer = (props: {
         [t]
     );
 
+    const { colorizeReply, replyOrder } = useSettings();
+
     const ReplyView = (props: { r: Reply }) => {
         const r = props.r;
         const [collapsed, setCollapsed] = useState(false);
-        const { colorizeReply } = useSettings();
         const modals = useModals();
         const isOp = t.hash === r.hash;
         const { colorScheme } = useMantineTheme();
@@ -197,7 +198,11 @@ const ThreadViewer = (props: {
                         >
                             {r.hash}
                         </Text>
-                        {isOp && <Badge variant="filled" radius="xs" size="sm">OP</Badge>}
+                        {isOp && (
+                            <Badge variant="filled" radius="xs" size="sm">
+                                OP
+                            </Badge>
+                        )}
                         {r.created && (
                             <Text size="xs">
                                 {r.created ? (
@@ -247,74 +252,13 @@ const ThreadViewer = (props: {
     };
 
     const replyMemos = useMemo(() => {
-        return t.replies.map((r, id) => <ReplyView r={r} key={id} />);
-    }, [t]);
+        const items = t.replies.map((r, id) => <ReplyView r={r} key={id} />);
+        return replyOrder === "newer-first" ? items.reverse() : items;
+    }, [t, replyOrder]);
 
-    return (
-        <>
-            <Head>
-                <title>Forum :: {t.title}</title>
-            </Head>
-            <div style={{ display: "flex" }}>
-                <Title style={{ flexGrow: 1 }} order={2} mb={10}>
-                    {t.title}
-                </Title>
-                <Badge
-                    styles={{
-                        root: { textTransform: "none" },
-                    }}
-                    variant="light"
-                    size="lg"
-                    mx={5}
-                >
-                    {t.hash}
-                </Badge>
-                <Menu>
-                    <Menu.Label>Recover</Menu.Label>
-                    <Menu.Item icon={<CubeIcon />}>Recover from IPFS</Menu.Item>
-                    <Menu.Item icon={<GlobeIcon />}>
-                        Recover from Internet Archive
-                    </Menu.Item>
-                    <Divider />
-                    <Menu.Label>Storage</Menu.Label>
-                    <Menu.Item
-                        color="blue"
-                        onClick={pinMenuItemClick}
-                        icon={
-                            isPinned ? (
-                                <DrawingPinFilledIcon />
-                            ) : (
-                                <DrawingPinIcon />
-                            )
-                        }
-                    >
-                        {isPinned ? "Unpin" : "Pin"}
-                    </Menu.Item>
-                    ,
-                    <Menu.Item color="lime" icon={<DownloadIcon />}>
-                        Save in browser
-                    </Menu.Item>
-                    ,
-                    <Menu.Item color="lime" icon={<CubeIcon />}>
-                        Save to IPFS
-                    </Menu.Item>
-                </Menu>
-            </div>
-            <Paper
-                className="thread-content"
-                sx={{ img: { maxWidth: "100%" } }}
-                padding="md"
-                shadow="sm"
-                mb={20}
-            >
-                <ContentRenderer>{t.text}</ContentRenderer>
-            </Paper>
-            {/* <Divider mb={20} variant="dashed" /> */}
-            {t.replies.length === 0 && (
-                <Text>No replies. Be first to reply!</Text>
-            )}
-            <div style={{ marginBottom: 20 }}>{replyMemos}</div>
-            {/* <Divider mb={20} variant="dashed" /> */}
+    const replyForm = useMemo(() => {
+        return (
+            <>
             <Title order={3} mb={5}>
                 Post a reply
             </Title>
@@ -398,6 +342,75 @@ const ThreadViewer = (props: {
                 </Button>
             </form>
             <br />
+            </>
+        );
+    }, [editor, form, loading, mentions, setEditor, submit]);
+
+    return (
+        <>
+            <Head>
+                <title>Forum :: {t.title}</title>
+            </Head>
+            <div style={{ display: "flex" }}>
+                <Title style={{ flexGrow: 1 }} order={2} mb={10}>
+                    {t.title}
+                </Title>
+                <Badge
+                    styles={{
+                        root: { textTransform: "none" },
+                    }}
+                    variant="light"
+                    size="lg"
+                    mx={5}
+                >
+                    {t.hash}
+                </Badge>
+                <Menu>
+                    <Menu.Label>Recover</Menu.Label>
+                    <Menu.Item icon={<CubeIcon />}>Recover from IPFS</Menu.Item>
+                    <Menu.Item icon={<GlobeIcon />}>
+                        Recover from Internet Archive
+                    </Menu.Item>
+                    <Divider />
+                    <Menu.Label>Storage</Menu.Label>
+                    <Menu.Item
+                        color="blue"
+                        onClick={pinMenuItemClick}
+                        icon={
+                            isPinned ? (
+                                <DrawingPinFilledIcon />
+                            ) : (
+                                <DrawingPinIcon />
+                            )
+                        }
+                    >
+                        {isPinned ? "Unpin" : "Pin"}
+                    </Menu.Item>
+                    ,
+                    <Menu.Item color="lime" icon={<DownloadIcon />}>
+                        Save in browser
+                    </Menu.Item>
+                    ,
+                    <Menu.Item color="lime" icon={<CubeIcon />}>
+                        Save to IPFS
+                    </Menu.Item>
+                </Menu>
+            </div>
+            <Paper
+                className="thread-content"
+                sx={{ img: { maxWidth: "100%" } }}
+                padding="md"
+                shadow="sm"
+                mb={20}
+            >
+                <ContentRenderer>{t.text}</ContentRenderer>
+            </Paper>
+            { replyOrder === "newer-first" && replyForm }
+            {t.replies.length === 0 && (
+                <Text>No replies. Be first to reply!</Text>
+            )}
+            <div style={{ marginBottom: 20 }}>{replyMemos}</div>
+            { replyOrder !== "newer-first" && replyForm }
         </>
     );
 };

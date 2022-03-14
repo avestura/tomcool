@@ -18,7 +18,7 @@ import Head from "next/head";
 import { useSettings } from "../lib/settings";
 
 export default function Settings() {
-    const { colorizeReply, toggleColorizeReply, editor, setEditor } =
+    const { colorizeReply, toggleColorizeReply, editor, setEditor, replyOrder, setReplyOrder } =
         useSettings();
     const { colorScheme, toggleColorScheme } = useMantineColorScheme();
     return (
@@ -78,6 +78,21 @@ export default function Settings() {
                     >
                         <Radio value="plain">Plain Editor</Radio>
                         <Radio value="rich">Rich Editor</Radio>
+                    </RadioGroup>
+                    <RadioGroup
+                        label="Reply order"
+                        onChange={(ro) =>
+                            setReplyOrder(ro === "newer-first" ? "newer-first" : "older-first")
+                        }
+                        value={replyOrder === "newer-first" ? "newer-first" : "older-first"}
+                        description={
+                            replyOrder === "newer-first"
+                                ? "newer replies will be shown first"
+                                : "older replies will be shown first"
+                        }
+                    >
+                        <Radio value="older-first">Older First</Radio>
+                        <Radio value="newer-first">Newer First</Radio>
                     </RadioGroup>
                     <InputWrapper
                         label="Dev Tools"
