@@ -26,6 +26,12 @@ export default function AboutPage() {
                             avestura/tomcool
                         </Anchor>
                     </List.Item>
+                    <List.Item>
+                        Efficient binary serialization format.
+                        <Anchor href="https://github.com/trgwii/RoryBufs">
+                            trgwii/RoryBufs
+                        </Anchor>
+                    </List.Item>
                 </List>
             </Group>
         </>
