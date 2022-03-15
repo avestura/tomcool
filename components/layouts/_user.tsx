@@ -69,11 +69,11 @@ export function User(props: { closeCuratin?: () => void }) {
                         <Text size="sm" weight={500}>
                             Anonymous
                         </Text>
-                        <Text color="dimmed" size="xs">
+                        {/* <Text color="dimmed" size="xs">
                             User Hash: {error && <i>failed to fetch</i>}{" "}
                             {!error && !data && <i>loading...</i>}{" "}
                             {data && <>{JSON.stringify(data)}</>}
-                        </Text>
+                        </Text> */}
                     </div>
 
                     {theme.dir === "ltr" ? (
