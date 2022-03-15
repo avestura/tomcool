@@ -13,7 +13,7 @@ import {
 import { Board } from "../models/ThomasForumModels";
 import { IconJarLogoIcon } from "@modulz/radix-icons";
 import { formatDistance } from "date-fns";
-import { FcCollaboration, FcGlobe, FcSupport } from "react-icons/fc";
+import { FcCalculator, FcCollaboration, FcGlobe, FcSupport } from "react-icons/fc";
 import { useRouter } from "next/router";
 const useStyles = createStyles((theme) => ({
     card: {
@@ -39,8 +39,8 @@ const useStyles = createStyles((theme) => ({
 
 interface BoardItemViewerProps {
     board: Board;
-    isDefaultBoard: boolean,
-    setDefaultBoard: () => void
+    isDefaultBoard: boolean;
+    setDefaultBoard: () => void;
 }
 
 const icons = new Map([
@@ -52,13 +52,20 @@ const icons = new Map([
             💩
         </Text>,
     ],
+    [
+        "otter",
+        <Text key={3} style={{ fontSize: 42 }}>
+            🦦
+        </Text>,
+    ],
+    ["math", <FcCalculator key={1} size={42} />]
 ]);
 
 export function BoardItemViewer(props: BoardItemViewerProps) {
     const { classes } = useStyles();
-    const {board, isDefaultBoard, setDefaultBoard} = props
+    const { board, isDefaultBoard, setDefaultBoard } = props;
     const { name, description, expiry } = board;
-    const router = useRouter()
+    const router = useRouter();
     const BoardIcon = icons.has(name) ? (
         icons.get(name)
     ) : (
@@ -88,7 +95,9 @@ export function BoardItemViewer(props: BoardItemViewerProps) {
                 <Text size="sm" weight={700} className={classes.title}>
                     {name}
                 </Text>
-                <Badge color={isDefaultBoard ? "green" : "gray"} size="xs">{isDefaultBoard ? "default" :""}</Badge>
+                <Badge color={isDefaultBoard ? "green" : "gray"} size="xs">
+                    {isDefaultBoard ? "default" : ""}
+                </Badge>
             </Group>
             <Text mt="sm" mb="md" color="dimmed" size="xs">
                 {description}
@@ -109,7 +118,11 @@ export function BoardItemViewer(props: BoardItemViewerProps) {
                 >
                     {isDefaultBoard ? "Default" : "Set Default"}
                 </Button>
-                <Button variant="light" color="blue" onClick={() => router.push(`/b/${name}`)}>
+                <Button
+                    variant="light"
+                    color="blue"
+                    onClick={() => router.push(`/b/${name}`)}
+                >
                     View
                 </Button>
             </Group>
