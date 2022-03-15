@@ -7,10 +7,21 @@ import remarkMath from "remark-math";
 import remarkGemoji from "remark-gemoji";
 import remarkBreaks from "remark-breaks";
 import rehypeExternalLinks from "rehype-external-links";
-
+import {linkifyRegex} from "../lib/remark/regex-linkify"
 import "katex/dist/katex.min.css";
+import ContentRendereAnchor from "./layouts/ContentRendererAnchor";
 
 export const ContentRenderer = (props: { children: string }) => {
+    const linkifyUrls = linkifyRegex(/^(https?):\/\/[^\s$.?#].[^\s]*$/)
+    const linkifyThreadLinks = linkifyRegex(/([\w]+)?#(\d+)/, path => {
+        const result = (/([\w]+)?#(\d+)/).exec(path);
+        const board = result ? result[1] : undefined
+        const id = result ? result[2] : undefined
+        if(board && id) {
+            return `/b/${board}/${id}`
+        }
+        return path
+    })
     return (
         <ReactMarkdown
             disallowedElements={["script", "media", "iframe"]}
@@ -20,7 +31,7 @@ export const ContentRenderer = (props: { children: string }) => {
                 rehypeKatex,
                 rehypeExternalLinks,
             ]}
-            remarkPlugins={[remarkMath, remarkGemoji, remarkBreaks]}
+            remarkPlugins={[remarkMath, remarkGemoji, remarkBreaks, linkifyUrls, linkifyThreadLinks]}
             components={{
                 code({ node, inline, className, children, ...props }) {
                     const match = /language-(\w+)/.exec(className || "");
@@ -38,7 +49,7 @@ export const ContentRenderer = (props: { children: string }) => {
                         </Code>
                     );
                 },
-                a: Anchor,
+                a: ContentRendereAnchor,
                 blockquote({ children, node }) {
                     return <Blockquote>{children}</Blockquote>;
                 },

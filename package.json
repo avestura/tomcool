@@ -37,6 +37,7 @@
     "remark-gemoji": "^7.0.1",
     "remark-math": "^5.1.1",
     "swr": "^1.2.2",
+    "unist-util-flatmap": "^1.0.0",
     "unist-util-visit": "^4.1.0"
   },
   "devDependencies": {

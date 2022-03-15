@@ -21,6 +21,7 @@ import {
     Badge,
     Anchor,
     ActionIcon,
+    useCss,
 } from "@mantine/core";
 import { useRouter } from "next/router";
 import { useEffect, useMemo, useState } from "react";
@@ -40,6 +41,7 @@ import {
     DrawingPinIcon,
     GlobeIcon,
     PinTopIcon,
+    ClipboardIcon,
 } from "@modulz/radix-icons";
 import useSWR from "swr";
 import {
@@ -51,7 +53,14 @@ import axios from "axios";
 import { useNotifications } from "@mantine/notifications";
 import RichTextEditor from "../../../components/RichTextEditor";
 import { ContentRenderer } from "../../../components/ContentRenderer";
-import { useForm, useLocalStorageValue, useToggle } from "@mantine/hooks";
+import {
+    useClickOutside,
+    useForm,
+    useLocalStorageValue,
+    useScrollIntoView,
+    useToggle,
+    useWindowEvent,
+} from "@mantine/hooks";
 import { usePins } from "../../../lib/pins";
 import { useThreadModificationDates } from "../../../lib/newThreads";
 import { formatDistance } from "date-fns";
@@ -84,7 +93,7 @@ const ThreadViewer = (props: {
         defaultValue: "rich",
     });
 
-    const router = useRouter()
+    const router = useRouter();
 
     const [loading, setLoading] = useState(false);
 
@@ -101,7 +110,7 @@ const ThreadViewer = (props: {
                 created: t.created,
                 title: t.title,
                 hash: t.hash,
-                boardName: props.boardName
+                boardName: props.boardName,
             });
         }
         setIsPinned(hasPin(props.boardName, props.id));
@@ -175,7 +184,7 @@ const ThreadViewer = (props: {
 
     const { colorizeReply, replyOrder } = useSettings();
 
-    const ReplyView = (props: { r: Reply }) => {
+    const ReplyView = (props: { r: Reply; hashId: number }) => {
         const r = props.r;
         const [collapsed, setCollapsed] = useState(false);
         const modals = useModals();
@@ -187,12 +196,47 @@ const ThreadViewer = (props: {
                 children: <Prism language="markdown">{r.text}</Prism>,
                 size: "xl",
             });
+        const { cx } = useCss();
+
+        const [isHighlight, setIsHighlight] = useState<boolean>(false);
+
+        const outClickRef = useClickOutside(() => setIsHighlight(false));
+
+        const { scrollIntoView, targetRef } = useScrollIntoView<HTMLDivElement>(
+            { offset: 100 }
+        );
+
+        const checkHashString = () => {
+            const hashString = window.location.hash.replace("#", "");
+            if (hashString === String(props.hashId)) {
+                setIsHighlight(true);
+                scrollIntoView();
+            }
+            else {
+                setIsHighlight(false)
+            }
+        };
+
+        useWindowEvent("hashchange", (x) => checkHashString());
+        useEffect(() => checkHashString(), []);
+
+        const notifs = useNotifications();
+
         return (
             <Card
                 mb={10}
+                ref={targetRef}
                 shadow="sm"
-                className="comment-content"
-                sx={{ img: { maxWidth: "100%" }, overflowWrap: "anywhere" }}
+                className={cx(
+                    "comment-content",
+                    isHighlight ? "highlighted" : ""
+                )}
+                id={`reply-${props.hashId}`}
+                sx={(theme) => ({
+                    img: { maxWidth: "100%" },
+                    overflowWrap: "anywhere",
+                    boxShadow: isHighlight ? `1px 1px 13px ${ theme.colorScheme === "dark" ? "#fcfcb6" : "#9b9b31"}` : undefined,
+                })}
             >
                 <Card.Section
                     sx={(t) => ({
@@ -236,6 +280,7 @@ const ThreadViewer = (props: {
                         <div style={{ flexGrow: 1 }} />
                         <Group spacing={0}>
                             <ActionIcon
+                                ref={outClickRef}
                                 onClick={() => setCollapsed((s) => !s)}
                                 color="gray"
                                 size="md"
@@ -247,6 +292,19 @@ const ThreadViewer = (props: {
                                 )}
                             </ActionIcon>
                             <Menu>
+                                <Menu.Label>Navigator</Menu.Label>
+                                <Menu.Item onClick={() => {
+                                    navigator.clipboard.writeText(
+                                        `#${props.hashId}`
+                                    );
+                                    notifs.showNotification({
+                                        message: "Copied!",
+                                        autoClose: true,
+                                        icon: <ClipboardIcon />,
+                                    });
+                                }}>
+                                    Copy link to reply #{props.hashId}
+                                </Menu.Item>
                                 <Menu.Label>Developer Tools</Menu.Label>
                                 <Menu.Item
                                     onClick={openModal}
@@ -270,7 +328,9 @@ const ThreadViewer = (props: {
     };
 
     const replyMemos = useMemo(() => {
-        const items = t.replies.map((r, id) => <ReplyView r={r} key={id} />);
+        const items = t.replies.map((r, id) => (
+            <ReplyView r={r} key={id} hashId={id + 1} />
+        ));
         return replyOrder === "newer-first" ? items.reverse() : items;
     }, [t, replyOrder]);
 
@@ -378,7 +438,11 @@ const ThreadViewer = (props: {
             </Head>
             <div style={{ display: "flex" }}>
                 <Group style={{ flexGrow: 1 }}>
-                    <ActionIcon onClick={() => router.push(`/b/${props.boardName}`)} variant="filled" size="lg">
+                    <ActionIcon
+                        onClick={() => router.push(`/b/${props.boardName}`)}
+                        variant="filled"
+                        size="lg"
+                    >
                         <ArrowLeftIcon />
                     </ActionIcon>
                     <Title order={2} mb={10}>

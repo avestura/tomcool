@@ -6,7 +6,7 @@ type Settings = {
     mapping: Map<RegExp, Content>
 }
 
-export const regexReplacer : Plugin<[Settings], Root> = (settings) => {
+export const regexReplacer : Plugin<[Settings], Root> = () => {
     return (tree) => {
         visit(tree, "text", (node, index, parent) => {
             if (node.value) {
