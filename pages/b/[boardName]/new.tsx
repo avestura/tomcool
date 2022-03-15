@@ -152,7 +152,7 @@ export default function ThreadCreator() {
                                 )}
                             </Tabs.Tab>
                             <Tabs.Tab label="Preview">
-                                <ContentRenderer>
+                                <ContentRenderer boardName={boardName}>
                                     {form.values.content}
                                 </ContentRenderer>
                             </Tabs.Tab>

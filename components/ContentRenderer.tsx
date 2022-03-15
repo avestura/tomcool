@@ -11,17 +11,40 @@ import {linkifyRegex} from "../lib/remark/regex-linkify"
 import "katex/dist/katex.min.css";
 import ContentRendereAnchor from "./layouts/ContentRendererAnchor";
 
-export const ContentRenderer = (props: { children: string }) => {
-    const linkifyUrls = linkifyRegex(/^(https?):\/\/[^\s$.?#].[^\s]*$/)
-    const linkifyThreadLinks = linkifyRegex(/([\w]+)?#(\d+)/, path => {
-        const result = (/([\w]+)?#(\d+)/).exec(path);
+const getNavigatorLinkifiers = () => {
+
+    const full = /([\w]+)\/([\w]+)(#(\d+))?/
+    const linkifyBoardThreadReply = linkifyRegex(full, path => {
+        const result = (full).exec(path);
         const board = result ? result[1] : undefined
-        const id = result ? result[2] : undefined
-        if(board && id) {
-            return `/b/${board}/${id}`
+        const thread = result ? result[2] : undefined
+        const reply = result ? result[3] : undefined
+        if(board && thread && reply) {
+            return `/b/${board}/${thread}${reply}`
+        }
+        if(board && thread) {
+            return `/b/${board}/${thread}`
         }
         return path
     })
+
+    const threadAndReply = /([\w]+)?#(\d+)/
+    const linkifyThreadReply = (currentBoard: string | false) => linkifyRegex(threadAndReply, path => {
+        const result = (threadAndReply).exec(path);
+        const thread = result ? result[1] : undefined
+        const reply = result ? result[2] : undefined
+        if(thread && reply && currentBoard) {
+            return `/b/${currentBoard}/${thread}#${reply}`
+        }
+        return path
+    })
+
+    return { linkifyBoardThreadReply, linkifyThreadReply }
+}
+
+export const ContentRenderer = (props: { children: string, boardName: string | false }) => {
+    const linkifyUrls = linkifyRegex(/^(https?):\/\/[^\s$.?#].[^\s]*$/)
+    const {linkifyBoardThreadReply, linkifyThreadReply} = getNavigatorLinkifiers()
     return (
         <ReactMarkdown
             disallowedElements={["script", "media", "iframe"]}
@@ -31,7 +54,7 @@ export const ContentRenderer = (props: { children: string }) => {
                 rehypeKatex,
                 rehypeExternalLinks,
             ]}
-            remarkPlugins={[remarkMath, remarkGemoji, remarkBreaks, linkifyUrls, linkifyThreadLinks]}
+            remarkPlugins={[remarkMath, remarkGemoji, remarkBreaks, linkifyUrls, linkifyBoardThreadReply, linkifyThreadReply(props.boardName)]}
             components={{
                 code({ node, inline, className, children, ...props }) {
                     const match = /language-(\w+)/.exec(className || "");

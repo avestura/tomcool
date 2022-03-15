@@ -184,7 +184,7 @@ const ThreadViewer = (props: {
 
     const { colorizeReply, replyOrder } = useSettings();
 
-    const ReplyView = (props: { r: Reply; hashId: number }) => {
+    const ReplyView = (props: { r: Reply; hashId: number, currentBoard: string }) => {
         const r = props.r;
         const [collapsed, setCollapsed] = useState(false);
         const modals = useModals();
@@ -319,7 +319,7 @@ const ThreadViewer = (props: {
                 {!collapsed && (
                     <Card.Section>
                         <div style={{ margin: "0 20px" }}>
-                            <ContentRenderer>{r.text}</ContentRenderer>
+                            <ContentRenderer boardName={props.currentBoard}>{r.text}</ContentRenderer>
                         </div>
                     </Card.Section>
                 )}
@@ -329,7 +329,7 @@ const ThreadViewer = (props: {
 
     const replyMemos = useMemo(() => {
         const items = t.replies.map((r, id) => (
-            <ReplyView r={r} key={id} hashId={id + 1} />
+            <ReplyView r={r} key={id} hashId={id + 1} currentBoard={props.boardName} />
         ));
         return replyOrder === "newer-first" ? items.reverse() : items;
     }, [t, replyOrder]);
@@ -398,7 +398,7 @@ const ThreadViewer = (props: {
                                 )}
                             </Tabs.Tab>
                             <Tabs.Tab label="Preview">
-                                <ContentRenderer>
+                                <ContentRenderer boardName={props.boardName}>
                                     {form.values.content}
                                 </ContentRenderer>
                             </Tabs.Tab>
@@ -498,7 +498,7 @@ const ThreadViewer = (props: {
                 shadow="sm"
                 mb={20}
             >
-                <ContentRenderer>{t.text}</ContentRenderer>
+                <ContentRenderer boardName={props.boardName}>{t.text}</ContentRenderer>
             </Paper>
             {replyOrder === "newer-first" && replyForm}
             {t.replies.length === 0 && (
