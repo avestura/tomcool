@@ -88,10 +88,7 @@ const ThreadViewer = (props: {
         },
     });
 
-    const [editor, setEditor] = useLocalStorageValue<"plain" | "rich">({
-        key: "editor",
-        defaultValue: "rich",
-    });
+    const { editor, setEditor } = useSettings()
 
     const router = useRouter();
 

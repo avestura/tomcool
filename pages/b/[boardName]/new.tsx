@@ -19,6 +19,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { ContentRenderer } from "../../../components/ContentRenderer";
 import RichTextEditor from "../../../components/RichTextEditor";
+import { useSettings } from "../../../lib/settings";
 
 export default function ThreadCreator() {
     const notifications = useNotifications();
@@ -32,10 +33,7 @@ export default function ThreadCreator() {
         },
     });
 
-    const [editor, setEditor] = useLocalStorageValue<"plain" | "rich">({
-        key: "editor",
-        defaultValue: "rich",
-    });
+    const { editor, setEditor } = useSettings()
 
     const [loading, setLoading] = useState(false);
 

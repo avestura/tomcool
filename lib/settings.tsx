@@ -10,7 +10,7 @@ type DefaultSettingValues = {
 
 const defaults: DefaultSettingValues = {
     colorizeReply: 'true',
-    editor: 'rich',
+    editor: 'plain',
     replyOrder: 'older-first',
     board: 'main'
 }
