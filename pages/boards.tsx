@@ -23,7 +23,7 @@ const BoardsViewer = ({ boards }: { boards: Board[] }) => {
                 Set a Board as your default and it will be shown in your
                 homepage
             </Text>
-            <Group spacing="xs" align="center" style={{ marginTop: 14 }} grow>
+            <Group spacing="xs" mt={15} grow>
                 {boards.map((b) => (
                     <BoardItemViewer
                         key={b.name}

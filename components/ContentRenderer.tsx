@@ -13,7 +13,7 @@ import ContentRendereAnchor from "./layouts/ContentRendererAnchor";
 
 const getNavigatorLinkifiers = () => {
 
-    const full = /([\w]+)\/([\d]+)(#(\d+))?/
+    const full = /^([\w]+)\/([\d]+)(#(\d+))?/
     const linkifyBoardThreadReply = linkifyRegex(full, path => {
         const result = (full).exec(path);
         const board = result ? result[1] : undefined
@@ -28,7 +28,7 @@ const getNavigatorLinkifiers = () => {
         return path
     })
 
-    const threadAndReply = /([\d]+)?#(\d+)/
+    const threadAndReply = /^([\d]+)?#(\d+)/
     const linkifyThreadReply = (currentBoard: string | false) => linkifyRegex(threadAndReply, path => {
         const result = (threadAndReply).exec(path);
         const thread = result ? result[1] : undefined

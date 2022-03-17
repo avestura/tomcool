@@ -9,9 +9,10 @@ import {
     Button,
     SimpleGrid,
     Badge,
+    Tooltip,
 } from "@mantine/core";
 import { Board } from "../models/ThomasForumModels";
-import { IconJarLogoIcon } from "@modulz/radix-icons";
+import { StarFilledIcon, StarIcon } from "@modulz/radix-icons";
 import { formatDistance } from "date-fns";
 import { FcCalculator, FcCollaboration, FcGlobe, FcSupport } from "react-icons/fc";
 import { useRouter } from "next/router";
@@ -44,21 +45,9 @@ interface BoardItemViewerProps {
 }
 
 const icons = new Map([
-    ["main", <FcGlobe key={1} size={42} />],
-    ["dev", <FcSupport key={2} size={42} />],
-    [
-        "shit",
-        <Text key={3} style={{ fontSize: 42 }}>
-            💩
-        </Text>,
-    ],
-    [
-        "otter",
-        <Text key={3} style={{ fontSize: 42 }}>
-            🦦
-        </Text>,
-    ],
-    ["math", <FcCalculator key={1} size={42} />]
+    ["main", <FcGlobe key={1} size={24} />],
+    ["dev", <FcSupport key={2} size={24} />],
+    ["math", <FcCalculator key={1} size={24} />]
 ]);
 
 export function BoardItemViewer(props: BoardItemViewerProps) {
@@ -69,11 +58,11 @@ export function BoardItemViewer(props: BoardItemViewerProps) {
     const BoardIcon = icons.has(name) ? (
         icons.get(name)
     ) : (
-        <FcCollaboration size={42} />
+        <FcCollaboration size={24} />
     );
 
     const BoardInfoViewer = (props: { title: string; value: string }) => (
-        <div key={props.title}>
+        <div key={props.title} style={{marginRight: 5}}>
             <Text size="xs" color="dimmed">
                 {props.title}
             </Text>
@@ -84,15 +73,12 @@ export function BoardItemViewer(props: BoardItemViewerProps) {
     );
 
     return (
-        <Card withBorder padding="lg" shadow="sm" className={classes.card}>
-            <Card.Section>
-                <Center style={{ minHeight: 100, minWidth: 300 }}>
+        <Card style={{minWidth: "250px"}} withBorder padding="lg" shadow="sm" className={classes.card}>
+            <Group  position="left">
+                <Center>
                     <div>{BoardIcon}</div>
                 </Center>
-            </Card.Section>
-
-            <Group position="apart" mt="xl">
-                <Text size="sm" weight={700} className={classes.title}>
+                <Text size="sm" style={{flexGrow: 1}} weight={700} className={classes.title}>
                     {name}
                 </Text>
                 <Badge color={isDefaultBoard ? "green" : "gray"} size="xs">
@@ -110,17 +96,20 @@ export function BoardItemViewer(props: BoardItemViewerProps) {
                 <BoardInfoViewer title="anon" value="?" />
                 <BoardInfoViewer title="tripcode" value="?" />
             </Card.Section>
-            <Group spacing="xs" style={{ marginTop: 14 }} grow>
+            <Group spacing="xs" style={{ marginTop: 14 }}>
+                <Tooltip label={isDefaultBoard ? "This is your default board" : "Set as default board"} withArrow>
                 <Button
                     variant="light"
                     color={isDefaultBoard ? "green" : "gray"}
                     onClick={setDefaultBoard}
                 >
-                    {isDefaultBoard ? "Default" : "Set Default"}
+                    {isDefaultBoard ? <StarFilledIcon /> : <StarIcon />}
                 </Button>
+                </Tooltip>
                 <Button
                     variant="light"
                     color="blue"
+                    style={{flexGrow: 1}}
                     onClick={() => router.push(`/b/${name}`)}
                 >
                     View
