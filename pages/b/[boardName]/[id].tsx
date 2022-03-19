@@ -71,8 +71,158 @@ import { useMantineThemeStyles } from "@mantine/styles/lib/theme/MantineProvider
 import { useSettings } from "../../../lib/settings";
 import Head from "next/head";
 import { FcRight } from "react-icons/fc";
+import UniqueAvatar from "../../../components/UniqueAvatar";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+const ReplyView = (props: { r: Reply; hashId: number, currentBoard: string, threadHash: string }) => {
+    const r = props.r;
+    const [collapsed, setCollapsed] = useState(false);
+    const {colorizeReply} = useSettings()
+    const modals = useModals();
+    const isOp = props.threadHash === r.hash;
+    const { colorScheme } = useMantineTheme();
+    const openModal = () =>
+        modals.openModal({
+            title: "Raw Content",
+            children: <Prism language="markdown">{r.text}</Prism>,
+            size: "xl",
+        });
+    const { cx } = useCss();
+
+    const [isHighlight, setIsHighlight] = useState<boolean>(false);
+
+    const outClickRef = useClickOutside(() => setIsHighlight(false));
+
+    const { scrollIntoView, targetRef } = useScrollIntoView<HTMLDivElement>(
+        { offset: 100 }
+    );
+
+    const checkHashString = () => {
+        const hashString = window.location.hash.replace("#", "");
+        if (hashString === String(props.hashId)) {
+            setIsHighlight(true);
+            scrollIntoView();
+        }
+        else {
+            setIsHighlight(false)
+        }
+    };
+
+    useWindowEvent("hashchange", (x) => checkHashString());
+    useEffect(() => checkHashString(), []);
+
+    const notifs = useNotifications();
+
+    const [colorInString, setColorInString] = useState<string | undefined>(undefined)
+
+    useEffect(() => {
+        setColorInString(colorizeReply === "true"
+                                ? colorizeString(r.hash, colorScheme)
+                                : undefined)
+    }, [colorizeReply, colorScheme, r.hash])
+
+    return (
+        <Card
+            mb={10}
+            ref={targetRef}
+            shadow="sm"
+            className={cx(
+                "comment-content",
+                isHighlight ? "highlighted" : ""
+            )}
+            id={`reply-${props.hashId}`}
+            sx={(theme) => ({
+                img: { maxWidth: "100%" },
+                overflowWrap: "anywhere",
+                boxShadow: isHighlight ? `1px 1px 13px ${ theme.colorScheme === "dark" ? "#fcfcb6" : "#9b9b31"}` : undefined,
+            })}
+        >
+            <Card.Section
+                sx={(t) => ({
+                    background:
+                        t.colorScheme === "light"
+                            ? t.colors.gray[1]
+                            : t.colors.gray[8],
+                })}
+            >
+                <Group sx={{ padding: 5 }} spacing="xs">
+                    {/* <ChatBubbleIcon style={{ marginLeft: 5 }} /> */}
+                    <UniqueAvatar size={20} style={{marginLeft: 5}} color={colorInString} value={r.hash} />
+                    <Text
+                        color={colorInString}
+                    >
+                        {r.hash}
+                    </Text>
+                    {isOp && (
+                        <Badge variant="filled" radius="xs" size="sm">
+                            OP
+                        </Badge>
+                    )}
+                    {r.created && (
+                        <Text size="xs">
+                            {r.created ? (
+                                <Tooltip label={r.created} withArrow>
+                                    {formatDistance(
+                                        new Date(r.created),
+                                        new Date(),
+                                        { addSuffix: true }
+                                    )}
+                                </Tooltip>
+                            ) : (
+                                ""
+                            )}
+                        </Text>
+                    )}
+                    <div style={{ flexGrow: 1 }} />
+                    <Group spacing={0}>
+                        <ActionIcon
+                            ref={outClickRef}
+                            onClick={() => setCollapsed((s) => !s)}
+                            color="gray"
+                            size="md"
+                        >
+                            {collapsed ? (
+                                <ChevronDownIcon />
+                            ) : (
+                                <ChevronUpIcon />
+                            )}
+                        </ActionIcon>
+                        <Menu>
+                            <Menu.Label>Navigator</Menu.Label>
+                            <Menu.Item onClick={() => {
+                                navigator.clipboard.writeText(
+                                    `#${props.hashId}`
+                                );
+                                notifs.showNotification({
+                                    message: "Copied!",
+                                    autoClose: true,
+                                    icon: <ClipboardIcon />,
+                                });
+                            }}>
+                                Copy link to reply #{props.hashId}
+                            </Menu.Item>
+                            <Menu.Label>Developer Tools</Menu.Label>
+                            <Menu.Item
+                                onClick={openModal}
+                                icon={<CodeIcon />}
+                            >
+                                View Raw Content
+                            </Menu.Item>
+                        </Menu>
+                    </Group>
+                </Group>
+            </Card.Section>
+            {!collapsed && (
+                <Card.Section>
+                    <div style={{ margin: "0 20px" }}>
+                        <ContentRenderer boardName={props.currentBoard}>{r.text}</ContentRenderer>
+                    </div>
+                </Card.Section>
+            )}
+        </Card>
+    );
+};
 
 const ThreadViewer = (props: {
     id: number;
@@ -181,152 +331,11 @@ const ThreadViewer = (props: {
 
     const { colorizeReply, replyOrder } = useSettings();
 
-    const ReplyView = (props: { r: Reply; hashId: number, currentBoard: string }) => {
-        const r = props.r;
-        const [collapsed, setCollapsed] = useState(false);
-        const modals = useModals();
-        const isOp = t.hash === r.hash;
-        const { colorScheme } = useMantineTheme();
-        const openModal = () =>
-            modals.openModal({
-                title: "Raw Content",
-                children: <Prism language="markdown">{r.text}</Prism>,
-                size: "xl",
-            });
-        const { cx } = useCss();
 
-        const [isHighlight, setIsHighlight] = useState<boolean>(false);
-
-        const outClickRef = useClickOutside(() => setIsHighlight(false));
-
-        const { scrollIntoView, targetRef } = useScrollIntoView<HTMLDivElement>(
-            { offset: 100 }
-        );
-
-        const checkHashString = () => {
-            const hashString = window.location.hash.replace("#", "");
-            if (hashString === String(props.hashId)) {
-                setIsHighlight(true);
-                scrollIntoView();
-            }
-            else {
-                setIsHighlight(false)
-            }
-        };
-
-        useWindowEvent("hashchange", (x) => checkHashString());
-        useEffect(() => checkHashString(), []);
-
-        const notifs = useNotifications();
-
-        return (
-            <Card
-                mb={10}
-                ref={targetRef}
-                shadow="sm"
-                className={cx(
-                    "comment-content",
-                    isHighlight ? "highlighted" : ""
-                )}
-                id={`reply-${props.hashId}`}
-                sx={(theme) => ({
-                    img: { maxWidth: "100%" },
-                    overflowWrap: "anywhere",
-                    boxShadow: isHighlight ? `1px 1px 13px ${ theme.colorScheme === "dark" ? "#fcfcb6" : "#9b9b31"}` : undefined,
-                })}
-            >
-                <Card.Section
-                    sx={(t) => ({
-                        background:
-                            t.colorScheme === "light"
-                                ? t.colors.gray[1]
-                                : t.colors.gray[8],
-                    })}
-                >
-                    <Group sx={{ padding: 5 }} spacing="xs">
-                        <ChatBubbleIcon style={{ marginLeft: 5 }} />
-                        <Text
-                            color={
-                                colorizeReply === "true"
-                                    ? colorizeString(r.hash, colorScheme)
-                                    : undefined
-                            }
-                        >
-                            {r.hash}
-                        </Text>
-                        {isOp && (
-                            <Badge variant="filled" radius="xs" size="sm">
-                                OP
-                            </Badge>
-                        )}
-                        {r.created && (
-                            <Text size="xs">
-                                {r.created ? (
-                                    <Tooltip label={r.created} withArrow>
-                                        {formatDistance(
-                                            new Date(r.created),
-                                            new Date(),
-                                            { addSuffix: true }
-                                        )}
-                                    </Tooltip>
-                                ) : (
-                                    ""
-                                )}
-                            </Text>
-                        )}
-                        <div style={{ flexGrow: 1 }} />
-                        <Group spacing={0}>
-                            <ActionIcon
-                                ref={outClickRef}
-                                onClick={() => setCollapsed((s) => !s)}
-                                color="gray"
-                                size="md"
-                            >
-                                {collapsed ? (
-                                    <ChevronDownIcon />
-                                ) : (
-                                    <ChevronUpIcon />
-                                )}
-                            </ActionIcon>
-                            <Menu>
-                                <Menu.Label>Navigator</Menu.Label>
-                                <Menu.Item onClick={() => {
-                                    navigator.clipboard.writeText(
-                                        `#${props.hashId}`
-                                    );
-                                    notifs.showNotification({
-                                        message: "Copied!",
-                                        autoClose: true,
-                                        icon: <ClipboardIcon />,
-                                    });
-                                }}>
-                                    Copy link to reply #{props.hashId}
-                                </Menu.Item>
-                                <Menu.Label>Developer Tools</Menu.Label>
-                                <Menu.Item
-                                    onClick={openModal}
-                                    icon={<CodeIcon />}
-                                >
-                                    View Raw Content
-                                </Menu.Item>
-                            </Menu>
-                        </Group>
-                    </Group>
-                </Card.Section>
-                {!collapsed && (
-                    <Card.Section>
-                        <div style={{ margin: "0 20px" }}>
-                            <ContentRenderer boardName={props.currentBoard}>{r.text}</ContentRenderer>
-                        </div>
-                    </Card.Section>
-                )}
-            </Card>
-        );
-    };
 
     const replyMemos = useMemo(() => {
         const items = t.replies.map((r, id) => (
-            <ReplyView r={r} key={id} hashId={id + 1} currentBoard={props.boardName} />
+            <ReplyView r={r} key={id} hashId={id + 1} currentBoard={props.boardName} threadHash={t.hash} />
         ));
         return replyOrder === "newer-first" ? items.reverse() : items;
     }, [t, replyOrder]);
