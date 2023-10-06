@@ -71,7 +71,7 @@ const BoardView = ({
                         <Timeline.Item
                             style={{ cursor: "pointer" }}
                             onClick={() =>
-                                router.push(`/b/${board.name}/${th.id}`)
+                                th.expired || router.push(`/b/${board.name}/${th.id}`)
                             }
                             className="comment-content"
                             sx={{ img: { maxWidth: "100%" } }}
@@ -79,20 +79,20 @@ const BoardView = ({
                             bullet={<ReaderIcon scale={2} />}
                             title={
                                 <>
-                                    <Anchor
+                                    {th.expired ? th.title : <Anchor
                                         onClick={(e: any) => {
                                             e.preventDefault();
                                         }}
                                         href={`/b/${board.name}/${th.id}`}
                                     >
                                         {th.title}
-                                    </Anchor>
+                                    </Anchor>}
                                     &nbsp;
                                     {isNewThread(
                                         board.name,
                                         th.id,
                                         th.modified
-                                    ) && (
+                                    ) && !th.expired && (
                                         <Badge
                                             sx={{
                                                 verticalAlign: "middle",
@@ -101,6 +101,16 @@ const BoardView = ({
                                             size="xs"
                                         >
                                             new
+                                        </Badge>
+                                    )}
+                                    {th.expired && (
+                                        <Badge
+                                            sx={{
+                                                verticalAlign: "middle",
+                                            }}
+                                            size="xs"
+                                        >
+                                            expired
                                         </Badge>
                                     )}
                                 </>

@@ -10,7 +10,8 @@ export type RecentThread = {
     modified: string,
     hash: string,
     title: string,
-    replies: number
+    replies: number,
+    expired: boolean
 }
 
 export type Thread = {
