@@ -1,4 +1,4 @@
 # TomCool
 
-An alternative frontend for Thomas's Cool Forum Software
+An alternative front-end for Thomas's Cool Forum Software
 
